@@ -1,0 +1,28 @@
+# Chinese translations for data package.
+# Copyright (C) 2024 THE data'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the data package.
+#  <youthlinchen@outlook.com>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pub v0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-09 19:38:18+0800\n"
+"PO-Revision-Date: 2024-01-09 19:40+0800\n"
+"Last-Translator:  <youthlinchen@outlook.com>\n"
+"Language-Team: Chinese (simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Created-By: xtpl(https://github.com/pub-go/tpl/tree/main/cmd/xtpl)\n"
+"X-xTpl-Path: ../views\n"
+"X-xTpl-Pattern: .*\\.html\n"
+"X-xTpl-Keywords: T;N:1,2;N64:1,2;X:1c,2;XN:1c,2,3;XN64:1c,2,3;__;_n:1,2;"
+"_x:1c,2;_xn:1c,2,3\n"
+"X-xTpl-Output: messages.pot\n"
+
+#: index.html:10:24 index.html:14:20
+msgid "Hello, World!"
+msgstr "你好，世界"
