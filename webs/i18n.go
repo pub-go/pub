@@ -4,19 +4,25 @@ import (
 	"embed"
 	"strings"
 
+	"code.gopub.tech/logs"
 	"code.gopub.tech/logs/pkg/kv"
+	"code.gopub.tech/pub/settings"
 	"code.gopub.tech/tpl/exp"
 	"github.com/gin-gonic/gin"
 	"github.com/youthlin/t"
 )
 
 // InitI18n 初始化翻译
-func InitI18n(lang embed.FS) {
-	if gin.IsDebugging() {
-		t.Load("./lang")
+func InitI18n(defaultLangFs embed.FS) {
+	if path := settings.AppConf.LangPath; path != "" {
+		t.Load(path)
+		logs.Info(ctx, "set languange path: %v", path)
 	} else {
-		t.LoadFS(lang)
+		t.LoadFS(defaultLangFs)
+		logs.Info(ctx, "use internal language translations")
 	}
+	t.SetLocale(settings.AppConf.Lang)
+	logs.Info(ctx, "used locale: %s", t.UsedLocale())
 }
 
 // I18n 为每个请求决定使用哪种语言

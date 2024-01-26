@@ -1,7 +1,9 @@
+code.gopub.tech/errors v0.0.1 h1:bKSnsvy/n9tN6ekQNKF77QCcfERf76itdoSbGQB/H6w=
+code.gopub.tech/errors v0.0.1/go.mod h1:IBBzlxjftw+srrZofhEkuubZVbhw2UKpnIcAuRUT/0Q=
 code.gopub.tech/logs v0.0.5 h1:wmIEZNjAk2WQ9rrWIpAvMIkX6PV6/IwM6f5hmqeC/0o=
 code.gopub.tech/logs v0.0.5/go.mod h1:eCQAZREi58NQIyafDJWXhesIEw6uT16BgwTjNP5by4k=
-code.gopub.tech/tpl v0.0.0-20240109072758-f59c61bb8eb3 h1:gVnNsBB4/vOWTvq/Rvmb2kFTFLqCsOeX46yxjtbQfYk=
-code.gopub.tech/tpl v0.0.0-20240109072758-f59c61bb8eb3/go.mod h1:7OdHiZiRq88vavEBVnOIOMaRSTcCI+WlILFlZcnXgIk=
+code.gopub.tech/tpl v0.0.0-20240110093214-640e59ffbd10 h1:lgrQ4+aNenFdISdYBBYvKUnE1a1TvYMWMLPQ9Fu9Yj8=
+code.gopub.tech/tpl v0.0.0-20240110093214-640e59ffbd10/go.mod h1:7OdHiZiRq88vavEBVnOIOMaRSTcCI+WlILFlZcnXgIk=
 github.com/Xuanwo/go-locale v1.1.0 h1:51gUxhxl66oXAjI9uPGb2O0qwPECpriKQb2hl35mQkg=
 github.com/Xuanwo/go-locale v1.1.0/go.mod h1:UKrHoZB3FPIk9wIG2/tVSobnHgNnceGSH3Y8DY5cASs=
 github.com/antlr4-go/antlr/v4 v4.13.0 h1:lxCg3LAv+EUK6t1i0y1V6/SLeUi0eKEKdhQAlS8TVTI=

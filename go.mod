@@ -5,8 +5,9 @@ go 1.21.0
 toolchain go1.21.1
 
 require (
+	code.gopub.tech/errors v0.0.1
 	code.gopub.tech/logs v0.0.5
-	code.gopub.tech/tpl v0.0.0-20240109072758-f59c61bb8eb3
+	code.gopub.tech/tpl v0.0.0-20240110093214-640e59ffbd10
 	github.com/gin-gonic/gin v1.9.1
 	github.com/youthlin/t v0.0.8
 )

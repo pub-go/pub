@@ -18,6 +18,7 @@ func Trace() gin.HandlerFunc {
 		ctx := GetContext(c)
 		trace := GenTraceID()
 		c.Set("trace", trace)
+		c.Header("X-Trace-ID", trace)
 		ctx = SetTraceID(ctx, trace)
 		ctx = kv.Add(ctx,
 			"method", c.Request.Method,
