@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"code.gopub.tech/logs"
+	"code.gopub.tech/pub/dal"
 	"code.gopub.tech/pub/settings"
 	"code.gopub.tech/pub/webs"
 	"github.com/gin-gonic/gin"
@@ -47,4 +48,5 @@ func MustInit() {
 		panic(fmt.Sprintf("%+v", err))
 	}
 	webs.InitI18n(lang) // 尽早 load 翻译
+	dal.MustInit(*dir)  // 连接数据库
 }
