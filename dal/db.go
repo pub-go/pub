@@ -2,6 +2,7 @@ package dal
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -9,6 +10,7 @@ import (
 	"strings"
 
 	"code.gopub.tech/logs"
+	"code.gopub.tech/logs/pkg/arg"
 	"code.gopub.tech/pub/dal/model"
 	"code.gopub.tech/pub/dal/query"
 	"code.gopub.tech/pub/settings"
@@ -42,22 +44,33 @@ func register(dir string) {
 		OnOpenHook: sqlite3.SimpleOpenHook, // for _pragma_xxx=yyy
 	}, driverHook.NewHook(
 		func(ctx context.Context, method driverHook.Method, query string, args any) context.Context {
-			skip := calculateDepth([]string{"code.gopub.tech/pub/dal/query"})
-			ctx = context.WithValue(ctx, &logSkip, skip)
-			// before sql execute
-			log.Log(ctx, skip, logs.LevelNotice, "[sql] method=%v, sql=%v, args=%v",
-				method, query, args)
 			return ctx
 		},
 		func(ctx context.Context, method driverHook.Method, query string, args, result any, err error) (any, error) {
-			// after sql execute
-			if skip, ok := ctx.Value(&logSkip).(int); ok {
-				log.Log(ctx, skip, logs.LevelNotice, "[sql] method=%v, cost=%v, sql=%v, args=%v, result=%#v, err=%+v",
-					method, driverHook.Cost(ctx), query, args, result, err)
-			} else {
-				log.Info(ctx, "[sql] method=%v, cost=%v, sql=%v, args=%v, result=%#v, err=%+v",
-					method, driverHook.Cost(ctx), query, args, result, err)
+			level := logs.LevelNotice
+			if err != nil {
+				level = logs.LevelError
 			}
+			skip := calculateDepth([]string{"code.gopub.tech/pub/dal/query"})
+			var logResult any
+			logResult = fmt.Sprintf("%T(%v)", result, result)
+			if sr, ok := result.(sql.Result); ok {
+				lid, err := sr.LastInsertId()
+				ra, err2 := sr.RowsAffected()
+				logResult = arg.JSON(map[string]any{
+					"LastInsertId": map[string]any{
+						"value": lid,
+						"err":   err,
+					},
+					"RowsAffected": map[string]any{
+						"value": ra,
+						"err":   err2,
+					},
+				})
+			}
+			// after sql execute
+			log.Log(ctx, skip, level, "[sql] method=%v, cost=%v, sql=%v, args=%v, result=%v, err=%+v",
+				method, driverHook.Cost(ctx), query, arg.JSON(args), logResult, err)
 			return result, err
 		},
 	))
