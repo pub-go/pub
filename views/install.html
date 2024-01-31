@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<t:block :replace="cmt_trace.html"></t:block>
+<html lang="en" :lang="${lang}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title :text="${__('Install')}">Install</title>
+</head>
+
+<body>
+    <h1 :text="${__('Install')}">Install</h1>
+    <p :text="${__('Welcome')}">Welcome</p>
+    <form action="/install/" method="post" id="form">
+        <div>
+            <label for="site_title" :text="${__('Site Title')}">Site Title</label>
+            <input type="text" id="site_title" name="site_title">
+        </div>
+        <div>
+            <label for="username" :text="${__('Username')}">Username</label>
+            <input type="text" id="username" name="username">
+        </div>
+        <div>
+            <label for="email" :text="${__('Email')}">Email</label>
+            <input type="email" id="email" name="email">
+        </div>
+        <div>
+            <label for="password" :text="${__('Password')}">Password</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <div>
+            <button type="submit" :text="${__('Submit')}">Sumbit</button>
+        </div>
+    </form>
+    <script>
+        const form = document.getElementById('form')
+        form.addEventListener('submit', e => {
+            console.log(form.username, form.email, form.password)
+            e.preventDefault()
+            return false
+        })
+    </script>
+</body>
+<t:block :replace="cmt_footer.html"></t:block>
+
+</html>

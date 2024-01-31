@@ -11,7 +11,7 @@ func main() {
 		Mode:    gen.WithDefaultQuery,
 	})
 
-	g.ApplyBasic(model.User{})
+	g.ApplyBasic(model.User{}, model.Option{})
 
 	g.Execute()
 }

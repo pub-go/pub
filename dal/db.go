@@ -8,38 +8,41 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"code.gopub.tech/logs"
 	"code.gopub.tech/logs/pkg/arg"
 	"code.gopub.tech/pub/dal/model"
 	"code.gopub.tech/pub/dal/query"
 	"code.gopub.tech/pub/settings"
+	"code.gopub.tech/pub/webs"
 	driverHook "github.com/youthlin/driver"
 	sqlite3 "github.com/youthlin/go-sqlcipher"
 	"github.com/youthlin/sqlcipher"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const dbName = "data.db"
 const driverName = "sqlite3_hook"
 
-var logSkip int
 var DB *gorm.DB
+var sqlLogger logs.Logger
 var ctx = context.Background()
 
 func MustInit(dir string) {
+	sqlLogger = logs.NewLogger(logs.CombineHandlers(
+		logs.NewHandler(),
+		logs.NewHandler(
+			logs.WithFile(filepath.Join(dir, "logs", "sql.log")),
+		),
+	))
 	register(dir) // 注册驱动
 	open(dir)     // 打开
 	migrate()     // 自动插入表结构
 }
 
 func register(dir string) {
-	log := logs.NewLogger(logs.CombineHandlers(
-		logs.NewHandler(),
-		logs.NewHandler(
-			logs.WithFile(filepath.Join(dir, "logs", "sql.log")),
-		),
-	))
 	driverHook.Register(driverName, &sqlite3.SQLiteDriver{
 		OnOpenHook: sqlite3.SimpleOpenHook, // for _pragma_xxx=yyy
 	}, driverHook.NewHook(
@@ -47,11 +50,12 @@ func register(dir string) {
 			return ctx
 		},
 		func(ctx context.Context, method driverHook.Method, query string, args, result any, err error) (any, error) {
+			webs.AddSqlCount(ctx)
 			level := logs.LevelNotice
 			if err != nil {
 				level = logs.LevelError
 			}
-			skip := calculateDepth([]string{"code.gopub.tech/pub/dal/query"})
+			skip := calculateDepth()
 			var logResult any
 			logResult = fmt.Sprintf("%T(%v)", result, result)
 			if sr, ok := result.(sql.Result); ok {
@@ -69,17 +73,18 @@ func register(dir string) {
 				})
 			}
 			// after sql execute
-			log.Log(ctx, skip, level, "[sql] method=%v, cost=%v, sql=%v, args=%v, result=%v, err=%+v",
+			sqlLogger.Log(ctx, skip, level, "[sql] method=%v, cost=%v, sql=%v, args=%v, result=%v, err=%+v",
 				method, driverHook.Cost(ctx), query, arg.JSON(args), logResult, err)
 			return result, err
 		},
 	))
 }
 
-func calculateDepth(exclude []string) (skip int) {
+func calculateDepth() (skip int) {
 	pc := make([]uintptr, 30)
 	n := runtime.Callers(3, pc)
 	frames := runtime.CallersFrames(pc[:n])
+	exclude := []string{"code.gopub.tech/pub/dal/query"}
 	skip++
 	for {
 		frame, more := frames.Next()
@@ -119,7 +124,12 @@ func open(dir string) {
 	}
 	dsn := fmt.Sprintf("%s?%s", filepath.Join(dbDir, dbName), strings.Join(params, "&"))
 
-	db, err := gorm.Open(&sqlcipher.Dialector{DriverName: driverName, DSN: dsn}, &gorm.Config{})
+	db, err := gorm.Open(&sqlcipher.Dialector{DriverName: driverName, DSN: dsn}, &gorm.Config{
+		Logger: &dbLogger{
+			Logger:   sqlLogger,
+			LogLevel: logger.Info,
+		},
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -129,7 +139,85 @@ func open(dir string) {
 
 func migrate() {
 	db := DB
-	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.User{}, &model.Option{})
 	users, err := query.User.WithContext(ctx).Find()
 	logs.Info(ctx, "users: %v, err=%+v", users, err)
+}
+
+var _ logger.Interface = (*dbLogger)(nil)
+
+type dbLogger struct {
+	logs.Logger
+	logger.LogLevel
+	SlowThreshold time.Duration
+}
+
+// LogMode implements logger.Interface.
+func (l *dbLogger) LogMode(level logger.LogLevel) logger.Interface {
+	l.LogLevel = level
+	return l
+}
+
+// Info implements logger.Interface.
+func (l *dbLogger) Info(ctx context.Context, format string, args ...interface{}) {
+	if l.LogLevel >= logger.Info {
+		l.Logger.Info(ctx, format, args...)
+	}
+}
+
+// Warn implements logger.Interface.
+func (l *dbLogger) Warn(ctx context.Context, format string, args ...interface{}) {
+	if l.LogLevel >= logger.Warn {
+		l.Logger.Warn(ctx, format, args...)
+	}
+}
+
+// Error implements logger.Interface.
+func (l *dbLogger) Error(ctx context.Context, format string, args ...interface{}) {
+	if l.LogLevel >= logger.Error {
+		l.Logger.Error(ctx, format, args...)
+	}
+}
+
+// Trace implements logger.Interface.
+func (l *dbLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
+	if l.LogLevel <= logger.Silent {
+		return
+	}
+	elapsed := time.Since(begin)
+	switch {
+	case err != nil && l.LogLevel >= logger.Error:
+		var (
+			sql, rows     = fc()
+			rowsPrint any = rows
+			skip          = calculateDepth()
+		)
+		if rows == -1 {
+			rowsPrint = "-"
+		}
+		l.Logger.Log(ctx, skip, logs.LevelError, "err=[%s] [%.3fms] [rows:%v] %s",
+			err, float64(elapsed.Nanoseconds())/1e6, rowsPrint, sql)
+	case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.LogLevel >= logger.Warn:
+		var (
+			sql, rows     = fc()
+			rowsPrint any = rows
+			skip          = calculateDepth()
+		)
+		if rows == -1 {
+			rowsPrint = "-"
+		}
+		l.Logger.Log(ctx, skip, logs.LevelWarn, "[SLOW SQL >= %v] [%.3fms] [rows:%v] %s",
+			l.SlowThreshold, float64(elapsed.Nanoseconds())/1e6, rowsPrint, sql)
+	case l.LogLevel == logger.Info:
+		var (
+			sql, rows     = fc()
+			rowsPrint any = rows
+			skip          = calculateDepth()
+		)
+		if rows == -1 {
+			rowsPrint = "-"
+		}
+		l.Logger.Log(ctx, skip, logs.LevelInfo, "[%.3fms] [rows:%v] %s",
+			float64(elapsed.Nanoseconds())/1e6, rowsPrint, sql)
+	}
 }

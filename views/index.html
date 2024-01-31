@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<t:block :raw="${'<!--'}"></t:block>
-<t:block :text="${ctx.GetString('trace')}"></t:block>
-<t:block :raw="${'-->'}"></t:block>
+<t:block :replace="cmt_trace.html"></t:block>
 <html lang="en" :lang="${lang}">
 
 <head>
@@ -13,5 +11,6 @@
 <body>
     <p :text="${__('Hello, World!')}">Hello, World!</p>
 </body>
+<t:block :replace="cmt_trace.html"></t:block>
 
 </html>

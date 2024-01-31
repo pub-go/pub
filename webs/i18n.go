@@ -1,6 +1,7 @@
 package webs
 
 import (
+	"context"
 	"embed"
 	"strings"
 
@@ -30,7 +31,7 @@ func I18n() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := GetContext(c)
 		lang := t.GetUserLang(c.Request) // 获取浏览器偏好语言
-		ctx = kv.Add(ctx, "lang", lang)  // 在日志中打印
+		ctx = kv.Add(ctx, KeyLang, lang) // 在日志中打印
 		ctx = t.SetCtxLocale(ctx, lang)  // 存在 ctx 里
 		SetContext(c, ctx)               // 设置 ctx
 		c.Next()
@@ -38,12 +39,7 @@ func I18n() gin.HandlerFunc {
 }
 
 // WithI18n 将翻译工具函数等注入到模板变量中
-func WithI18n(c *gin.Context, data gin.H) gin.H {
-	if data == nil {
-		data = make(gin.H)
-	}
-	data["ctx"] = c
-	ctx := GetContext(c)    // 取出 ctx
+func WithI18n(ctx context.Context, data gin.H) gin.H {
 	t := t.WithContext(ctx) // 设置语言
 	data["t"] = t
 	data["__"] = t.T
@@ -54,6 +50,6 @@ func WithI18n(c *gin.Context, data gin.H) gin.H {
 	data["_xn"] = func(msgCtx, msgID, msgIDPlural string, n any, args ...interface{}) string {
 		return t.XN64(msgCtx, msgID, msgIDPlural, exp.ToNumber[int64](n), args...)
 	}
-	data["lang"] = strings.ReplaceAll(t.UsedLocale(), "_", "-")
+	data[KeyLang] = strings.ReplaceAll(t.UsedLocale(), "_", "-")
 	return data
 }

@@ -1,6 +1,8 @@
 module code.gopub.tech/pub
 
-go 1.18
+go 1.21.0
+
+toolchain go1.21.6
 
 require (
 	code.gopub.tech/errors v0.0.1
