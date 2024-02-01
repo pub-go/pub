@@ -8,8 +8,10 @@ import (
 	"regexp"
 	"time"
 
+	"code.gopub.tech/errors"
 	"code.gopub.tech/logs"
 	"code.gopub.tech/pub/settings"
+	"code.gopub.tech/pub/util"
 	"code.gopub.tech/tpl"
 	"code.gopub.tech/tpl/html"
 	"code.gopub.tech/tpl/types"
@@ -21,7 +23,7 @@ func SetRender(views embed.FS) gin.HandlerFunc {
 	var (
 		err      error
 		viewExp  *regexp.Regexp
-		viewPath = settings.AppConf.ViewPath
+		viewPath = settings.AppConf.ViewPath()
 	)
 	if viewPath != "" {
 		pattern := settings.AppConf.ViewPattern
@@ -30,7 +32,7 @@ func SetRender(views embed.FS) gin.HandlerFunc {
 		}
 		viewExp, err = regexp.Compile(pattern)
 		if err != nil {
-			panic(err)
+			util.Panic(ctx, errors.Wrapf(err, "invalid view pattern: %s", pattern))
 		}
 	}
 	render, err := tpl.NewHTMLRender(func(ctx context.Context) (types.TemplateManager, error) {
@@ -42,10 +44,10 @@ func SetRender(views embed.FS) gin.HandlerFunc {
 		}
 		// 使用编译时嵌入的 embed.FS 资源
 		logs.Info(ctx, "use internal views")
-		return m, m.SetSubFS("views").ParseWithSuffix(views, ".html")
+		return m, m.SetSubFS("resource/views").ParseWithSuffix(views, ".html")
 	}, tpl.WithHotReload(gin.IsDebugging()))
 	if err != nil {
-		panic(err)
+		logs.Panic(ctx, "err=%+v", err)
 	}
 	return func(c *gin.Context) {
 		// 往上下文中注入 Render

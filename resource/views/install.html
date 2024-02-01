@@ -6,11 +6,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title :text="${__('Install')}">Install</title>
+    <link rel="stylesheet" href="../static/css/style.css" :href="/static/css/style.css">
+    <script src="../static/js/sha256.min.js" :src="/static/js/sha256.min.js"></script>
 </head>
 
 <body>
     <h1 :text="${__('Install')}">Install</h1>
     <p :text="${__('Welcome')}">Welcome</p>
+    <blockquote>BlockQuote</blockquote>
+    <q>q words</q>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+    </ul>
     <form action="/install/" method="post" id="form">
         <div>
             <label for="site_title" :text="${__('Site Title')}">Site Title</label>

@@ -2,19 +2,20 @@ package dal
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"strings"
 	"time"
 
+	"code.gopub.tech/errors"
 	"code.gopub.tech/logs"
-	"code.gopub.tech/logs/pkg/arg"
 	"code.gopub.tech/pub/dal/model"
 	"code.gopub.tech/pub/dal/query"
 	"code.gopub.tech/pub/settings"
+	"code.gopub.tech/pub/util"
 	"code.gopub.tech/pub/webs"
 	driverHook "github.com/youthlin/driver"
 	sqlite3 "github.com/youthlin/go-sqlcipher"
@@ -31,6 +32,7 @@ var sqlLogger logs.Logger
 var ctx = context.Background()
 
 func MustInit(dir string) {
+	// sql 日志
 	sqlLogger = logs.NewLogger(logs.CombineHandlers(
 		logs.NewHandler(),
 		logs.NewHandler(
@@ -39,10 +41,11 @@ func MustInit(dir string) {
 	))
 	register(dir) // 注册驱动
 	open(dir)     // 打开
-	migrate()     // 自动插入表结构
+	migrate()     // 自动更新表结构
 }
 
 func register(dir string) {
+	// 注册包装后的驱动 用于 sql 计数
 	driverHook.Register(driverName, &sqlite3.SQLiteDriver{
 		OnOpenHook: sqlite3.SimpleOpenHook, // for _pragma_xxx=yyy
 	}, driverHook.NewHook(
@@ -51,35 +54,12 @@ func register(dir string) {
 		},
 		func(ctx context.Context, method driverHook.Method, query string, args, result any, err error) (any, error) {
 			webs.AddSqlCount(ctx)
-			level := logs.LevelNotice
-			if err != nil {
-				level = logs.LevelError
-			}
-			skip := calculateDepth()
-			var logResult any
-			logResult = fmt.Sprintf("%T(%v)", result, result)
-			if sr, ok := result.(sql.Result); ok {
-				lid, err := sr.LastInsertId()
-				ra, err2 := sr.RowsAffected()
-				logResult = arg.JSON(map[string]any{
-					"LastInsertId": map[string]any{
-						"value": lid,
-						"err":   err,
-					},
-					"RowsAffected": map[string]any{
-						"value": ra,
-						"err":   err2,
-					},
-				})
-			}
-			// after sql execute
-			sqlLogger.Log(ctx, skip, level, "[sql] method=%v, cost=%v, sql=%v, args=%v, result=%v, err=%+v",
-				method, driverHook.Cost(ctx), query, arg.JSON(args), logResult, err)
 			return result, err
 		},
 	))
 }
 
+// calculateDepth 忽略 gorm 调用栈 定位到项目调用的代码行
 func calculateDepth() (skip int) {
 	pc := make([]uintptr, 30)
 	n := runtime.Callers(3, pc)
@@ -120,7 +100,7 @@ func open(dir string) {
 	}
 	dbDir := filepath.Join(dir, "data")
 	if err := os.MkdirAll(dbDir, 0755); err != nil {
-		panic(err)
+		util.Panic(ctx, errors.Wrapf(err, "mkdir %s", dbDir))
 	}
 	dsn := fmt.Sprintf("%s?%s", filepath.Join(dbDir, dbName), strings.Join(params, "&"))
 
@@ -131,8 +111,9 @@ func open(dir string) {
 		},
 	})
 	if err != nil {
-		panic(err)
+		util.Panic(ctx, errors.Wrapf(err, "can not open database `%s`, is key correct?", dsn))
 	}
+	logs.Info(ctx, "init database success")
 	DB = db
 	query.SetDefault(db)
 }
@@ -140,8 +121,6 @@ func open(dir string) {
 func migrate() {
 	db := DB
 	db.AutoMigrate(&model.User{}, &model.Option{})
-	users, err := query.User.WithContext(ctx).Find()
-	logs.Info(ctx, "users: %v, err=%+v", users, err)
 }
 
 var _ logger.Interface = (*dbLogger)(nil)
@@ -161,21 +140,22 @@ func (l *dbLogger) LogMode(level logger.LogLevel) logger.Interface {
 // Info implements logger.Interface.
 func (l *dbLogger) Info(ctx context.Context, format string, args ...interface{}) {
 	if l.LogLevel >= logger.Info {
-		l.Logger.Info(ctx, format, args...)
+		l.Logger.Log(ctx, calculateDepth(), logs.LevelInfo, format, args...)
 	}
 }
 
 // Warn implements logger.Interface.
 func (l *dbLogger) Warn(ctx context.Context, format string, args ...interface{}) {
 	if l.LogLevel >= logger.Warn {
-		l.Logger.Warn(ctx, format, args...)
+		l.Logger.Log(ctx, calculateDepth(), logs.LevelWarn, format, args...)
 	}
 }
 
 // Error implements logger.Interface.
 func (l *dbLogger) Error(ctx context.Context, format string, args ...interface{}) {
 	if l.LogLevel >= logger.Error {
-		l.Logger.Error(ctx, format, args...)
+		args = append(args, debug.Stack())
+		l.Logger.Log(ctx, calculateDepth(), logs.LevelError, format+"\n%s", args...)
 	}
 }
 

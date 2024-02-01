@@ -2,14 +2,20 @@ package main
 
 import (
 	"embed"
+	"io/fs"
 	"net/http"
 
+	"code.gopub.tech/logs"
 	"code.gopub.tech/pub/handler"
+	"code.gopub.tech/pub/settings"
 	"code.gopub.tech/pub/webs"
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed views
+//go:embed resource/static
+var static embed.FS
+
+//go:embed resource/views
 var views embed.FS
 
 func register(r *gin.Engine) {
@@ -21,9 +27,21 @@ func register(r *gin.Engine) {
 	r.Use(webs.Trace(), webs.I18n(), webs.SetRender(views), webs.Install())
 
 	// 路由逻辑
+	serveStatic(r)
 	front(r)
 	install(r)
 	admin(r)
+}
+
+func serveStatic(g gin.IRouter) {
+	if staticPath := settings.AppConf.StaticPath(); staticPath != "" {
+		logs.Info(ctx, "static resource dir: %s", staticPath)
+		g.Static("/static", staticPath)
+		return
+	}
+	logs.Info(ctx, "use internal static resource")
+	fs, _ := fs.Sub(static, "resource/static")
+	g.StaticFS("/static", http.FS(fs))
 }
 
 func front(g gin.IRouter) {
