@@ -90,12 +90,13 @@ func Install(ctx context.Context, req *reqs.InstallReq) error {
 
 func GetTitle(ctx context.Context) string {
 	if title == nil {
+		var s string
 		o := query.Option
 		option, err := o.WithContext(ctx).Where(o.Name.Eq(model.OptionNameSiteTitle)).First()
 		if err == nil && option != nil {
-			s := option.Value
-			title = &s
+			s = option.Value
 		}
+		title = &s
 	}
 	return *title
 }

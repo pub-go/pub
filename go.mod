@@ -5,7 +5,7 @@ go 1.21.0
 toolchain go1.21.6
 
 require (
-	code.gopub.tech/errors v0.0.1
+	code.gopub.tech/errors v0.0.2
 	code.gopub.tech/logs v0.0.5
 	code.gopub.tech/tpl v0.0.0-20240110093214-640e59ffbd10
 	github.com/gin-gonic/gin v1.9.1
