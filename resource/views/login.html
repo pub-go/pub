@@ -5,13 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title :text="${__('Install')}">Install</title>
+    <title :text="${__('Login')} - ${title}">Login</title>
     <link rel="stylesheet" href="../static/css/style.css" :href="/static/css/style.css">
     <script src="../static/js/sha256.min.js" :src="/static/js/sha256.min.js"></script>
 </head>
 
 <body>
-    <h1 :text="${__('Install')}">Install</h1>
+    <h1 :text="${__('Login')}">Login</h1>
     <p :text="${__('Welcome')}">Welcome</p>
     <blockquote :if="${err!=nil}">
         <details>
@@ -19,19 +19,11 @@
             <pre :text="${err}">detail message</pre>
         </details>
     </blockquote>
-    <form action="/install/" method="post" id="form" disabled>
+    <form action="/login/" method="post" id="form">
         <fieldset id="fieldset" disabled>
-            <div>
-                <label for="site_title" :text="${__('Site Title')}">Site Title</label>
-                <input type="text" id="site_title" name="site_title" required>
-            </div>
             <div>
                 <label for="username" :text="${__('Username')}">Username</label>
                 <input type="text" id="username" name="username" required>
-            </div>
-            <div>
-                <label for="email" :text="${__('Email')}">Email</label>
-                <input type="email" id="email" name="email" required>
             </div>
             <div>
                 <label for="password" :text="${__('Password')}">Password</label>

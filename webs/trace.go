@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"code.gopub.tech/logs/pkg/kv"
+	"code.gopub.tech/pub/util"
 	"github.com/gin-gonic/gin"
 )
 
-var traceID uint64
 var sqlCount struct{}
 
 const (
@@ -57,9 +57,8 @@ func Trace() gin.HandlerFunc {
 // GenTraceID 生成 traceID
 func GenTraceID() string {
 	now := time.Now()
-	seq := atomic.AddUint64(&traceID, 1) % 10_000_000
-	return fmt.Sprintf("%14s%09d%07d",
-		now.Format("20060102150405"), now.Nanosecond(), seq)
+	return fmt.Sprintf("%14s%09d%07s",
+		now.Format("20060102150405"), now.Nanosecond(), util.RandStr(7))
 }
 
 // InitSqlCount 初始化 sql 计数器

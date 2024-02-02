@@ -49,8 +49,10 @@ func front(g gin.IRouter) {
 }
 
 func install(g gin.IRouter) {
-	g.GET("/install/", webs.Render("install.html"))
-	g.POST("/install/", webs.Api(handler.Install))
+	g.GET("/install/", handler.InstallPage)
+	g.POST("/install/", handler.Install)
+	g.GET("/login/", handler.LoginPage)
+	g.POST("/login/", handler.Login)
 }
 
 func admin(g gin.IRouter) {

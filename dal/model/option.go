@@ -11,4 +11,6 @@ type Option struct {
 const (
 	OptionNameInstalled = "installed"
 	OptionValueYes      = "1"
+	OptionNameSalt      = "salt"
+	OptionNameSiteTitle = "site_title"
 )

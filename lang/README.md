@@ -3,7 +3,7 @@
 go install -v code.gopub.tech/tpl/cmd/xtpl@latest
 
 # 抽取翻译字符串
-xtpl -path ../views -output messages.pot
+xtpl -path ../resource/views -output messages.pot
 
 
 # 初始化翻译

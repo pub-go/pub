@@ -11,8 +11,8 @@ import (
 // Install 未安装拦截
 func Install() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		uri := ctx.Request.RequestURI
-		if strings.HasPrefix(uri, "/install/") || strings.HasPrefix(uri, "/static/") || uri == "/favicon.ico" {
+		path := ctx.Request.URL.Path
+		if strings.HasPrefix(path, "/install/") || strings.HasPrefix(path, "/static/") || path == "/favicon.ico" {
 			ctx.Next() // 安装页面、静态资源放过
 			return
 		}

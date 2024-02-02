@@ -10,6 +10,7 @@ import (
 
 	"code.gopub.tech/errors"
 	"code.gopub.tech/logs"
+	"code.gopub.tech/pub/service"
 	"code.gopub.tech/pub/settings"
 	"code.gopub.tech/pub/util"
 	"code.gopub.tech/tpl"
@@ -36,6 +37,9 @@ func SetRender(views embed.FS) gin.HandlerFunc {
 		}
 	}
 	render, err := tpl.NewHTMLRender(func(ctx context.Context) (types.TemplateManager, error) {
+		defer func(start time.Time) {
+			logs.Info(ctx, "parse tpl cost: %v", time.Since(start))
+		}(time.Now())
 		m := html.NewTplManager()
 		if viewPath != "" {
 			logs.Info(ctx, "views path: %s, pattern: %s", viewPath, viewExp)
@@ -64,7 +68,9 @@ func GetRender(ctx *gin.Context) types.ReloadableRender {
 // Render 渲染页面
 func Render(tpl string, datas ...gin.H) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var data = gin.H{}
+		var data = gin.H{
+			"title": service.GetTitle(ctx),
+		}
 		for _, m := range datas {
 			for k, v := range m {
 				data[k] = v
@@ -78,16 +84,24 @@ func Render(tpl string, datas ...gin.H) gin.HandlerFunc {
 func render(ctx *gin.Context, name string, data gin.H) {
 	reqStart := ctx.GetTime(KeyReqStart)
 	serviceCost := time.Since(reqStart)
-	logs.Info(ctx, "serviceCost=%v, Render tpl=%s, data=%v", serviceCost, name, data)
+	tplStart := time.Now()
+	tplCost := func() time.Duration {
+		return time.Since(tplStart) // 页面渲染用时
+	}
+	defer func() {
+		var errs []error
+		for _, e := range ctx.Errors {
+			errs = append(errs, e)
+		}
+		logs.Info(ctx, "serviceCost=%v, Render tpl=%s, cost=%v err=%+v",
+			serviceCost, name, tplCost(), errors.Join(errs...))
+	}()
 
 	data[KeyCtx] = ctx                 // 注入上下文 页面中可以 ctx.GetString
 	data[KeyServiceCost] = serviceCost // 请求用时
 
-	tplStart := time.Now()
 	data[KeyTplStart] = tplStart // 页面渲染开始时间
-	data[KeyTplCost] = func() time.Duration {
-		return time.Since(tplStart) // 页面渲染用时
-	}
+	data[KeyTplCost] = tplCost
 	data[KeyTotalCost] = func() time.Duration {
 		return time.Since(reqStart) // 总体用时
 	}

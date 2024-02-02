@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-09 19:38:18+0800\n"
+"POT-Creation-Date: 2024-02-02 19:08:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,13 +18,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "X-Created-By: xtpl(https://github.com/pub-go/tpl/tree/main/cmd/xtpl)\n"
-"X-xTpl-Path: ../views\n"
+"X-xTpl-Path: ../resource/views\n"
 "X-xTpl-Pattern: .*\\.html\n"
 "X-xTpl-Keywords: T;N:1,2;N64:1,2;X:1c,2;XN:1c,2,3;XN64:1c,2,3;__;_n:1,2;_x:1c,2;_xn:1c,2,3\n"
 "X-xTpl-Output: messages.pot\n"
 
-#: index.html:10:24
-#: index.html:14:20
+#: index.html:8:24
+#: index.html:12:20
 msgid "Hello, World!"
+msgstr ""
+
+#: install.html:8:24
+#: install.html:14:21
+msgid "Install"
+msgstr ""
+
+#: install.html:25:53
+msgid "Site Title"
+msgstr ""
+
+#: install.html:33:48
+msgid "Email"
+msgstr ""
+
+#: login.html:8:24
+#: login.html:14:21
+msgid "Login"
+msgstr ""
+
+#: login.html:15:20
+#: install.html:15:20
+msgid "Welcome"
+msgstr ""
+
+#: login.html:18:34
+#: install.html:18:34
+msgid "Opps, got some errors..."
+msgstr ""
+
+#: login.html:25:51
+#: install.html:29:51
+msgid "Username"
+msgstr ""
+
+#: login.html:29:51
+#: install.html:37:51
+msgid "Password"
+msgstr ""
+
+#: login.html:35:51
+#: install.html:43:51
+msgid "Submit"
 msgstr ""
 
