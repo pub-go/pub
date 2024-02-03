@@ -1,0 +1,7 @@
+<blockquote :if="${err!=nil}" class="error">
+    <details :if="${isDebug}">
+        <summary :text="${err}">Error Message</summary>
+        <pre :text="${printf('%+v', err)}">detail message</pre>
+    </details>
+    <pre :else :text="${err}">error message</pre>
+</blockquote>

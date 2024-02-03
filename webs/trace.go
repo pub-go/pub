@@ -20,6 +20,7 @@ const (
 	KeySqlCount    = "sqlCount"
 	KeyRender      = "render"
 	KeyCtx         = "ctx"
+	KeyIsDebug     = "isDebug"
 	KeyServiceCost = "serviceCost"
 	KeyTplStart    = "tplStart"
 	KeyTplCost     = "tplCost"

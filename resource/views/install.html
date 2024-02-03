@@ -7,54 +7,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title :text="${__('Install')}">Install</title>
     <link rel="stylesheet" href="../static/css/style.css" :href="/static/css/style.css">
-    <script src="../static/js/sha256.min.js" :src="/static/js/sha256.min.js"></script>
 </head>
 
 <body>
-    <h1 :text="${__('Install')}">Install</h1>
-    <p :text="${__('Welcome')}">Welcome</p>
-    <blockquote :if="${err!=nil}">
-        <details>
-            <summary :text="${__('Opps, got some errors...')}">Error Message</summary>
-            <pre :text="${err}">detail message</pre>
-        </details>
-    </blockquote>
-    <form action="/install/" method="post" id="form" disabled>
-        <fieldset id="fieldset" disabled>
-            <div>
-                <label for="site_title" :text="${__('Site Title')}">Site Title</label>
-                <input type="text" id="site_title" name="site_title" required>
-            </div>
-            <div>
-                <label for="username" :text="${__('Username')}">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div>
-                <label for="email" :text="${__('Email')}">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div>
-                <label for="password" :text="${__('Password')}">Password</label>
-                <input type="password" id="plain" required>
-                <input type="hidden" name="password" id="passwd">
-                <input type="hidden" name="salt" :value="${salt}">
-            </div>
-            <div>
-                <button type="submit" :text="${__('Submit')}">Sumbit</button>
-            </div>
-        </fieldset>
-    </form>
-    <script>
-        const fieldset = document.getElementById('fieldset')
-        fieldset.disabled = false
-        const form = document.getElementById('form')
-        const plain = document.getElementById('plain')
-        const passwd = document.getElementById('passwd')
-        form.addEventListener('submit', e => {
-            passwd.value = sha256(form.username.value + sha256(plain.value) + form.salt.value)
-            return true
-        })
-    </script>
+    <header>
+        <h1 :text="${__('Install')}">Install</h1>
+    </header>
+    <main>
+        <p :text="${__('Welcome')}">Welcome</p>
+        <blockquote class="error" :replace="show_err.html">Error Msg</blockquote>
+        <form action="/install/" method="post" id="login-form" disabled>
+            <fieldset id="fieldset" disabled>
+                <div>
+                    <label for="site_title" :text="${__('Site Title')}">Site Title</label>
+                    <input type="text" id="site_title" name="site_title" required>
+                </div>
+                <div>
+                    <label for="username" :text="${__('Username')}">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div>
+                    <label for="email" :text="${__('Email')}">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div>
+                    <label for="plain" :text="${__('Password')}">Password</label>
+                    <input type="password" id="plain" required>
+                    <input type="hidden" name="password" id="passwd">
+                    <input type="hidden" name="salt" :value="${salt}">
+                </div>
+                <div>
+                    <button type="submit" :text="${__('Submit')}">Sumbit</button>
+                </div>
+            </fieldset>
+        </form>
+    </main>
+    <footer :insert="footer.html">Footer</footer>
+    <script src="../static/js/sha256.min.js" :src="/static/js/sha256.min.js"></script>
+    <script src="../static/js/login.js" :src="/static/js/login.js"></script>
 </body>
 <t:block :replace="cmt_footer.html"></t:block>
 

@@ -97,7 +97,8 @@ func render(ctx *gin.Context, name string, data gin.H) {
 			serviceCost, name, tplCost(), errors.Join(errs...))
 	}()
 
-	data[KeyCtx] = ctx                 // 注入上下文 页面中可以 ctx.GetString
+	data[KeyCtx] = ctx // 注入上下文 页面中可以 ctx.GetString
+	data[KeyIsDebug] = gin.IsDebugging()
 	data[KeyServiceCost] = serviceCost // 请求用时
 
 	data[KeyTplStart] = tplStart // 页面渲染开始时间

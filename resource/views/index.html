@@ -6,10 +6,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title :text="${__('Home')} - ${title}">Hello, World~</title>
+    <link rel="stylesheet" href="../static/css/style.css" :href="/static/css/style.css">
 </head>
 
 <body>
-    <p :text="${__('Hello, World!')}">Hello, World!</p>
+    <header></header>
+    <main>
+        <p :text="${__('Hello, World!')}">Hello, World!</p>
+    </main>
+    <footer :insert="footer.html">Footer</footer>
+
 </body>
 <t:block :replace="cmt_footer.html"></t:block>
 
