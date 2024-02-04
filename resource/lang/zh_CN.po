@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pub v0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-02 23:38:45+0800\n"
+"POT-Creation-Date: 2024-02-04 20:28:51+0800\n"
 "PO-Revision-Date: 2024-01-09 19:40+0800\n"
 "Last-Translator:  <youthlinchen@outlook.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -24,49 +24,57 @@ msgstr ""
 "X-xTpl-Output: messages.pot\n"
 
 #: index.html:8:24
-msgid "Home"
+#, fuzzy
+msgid "Home - %s"
 msgstr "首页"
 
-#: index.html:12:20
-msgid "Hello, World!"
-msgstr "你好，世界"
+#: index.html:31:34
+msgid "No Posts"
+msgstr "没有文章"
 
-#: install.html:8:24 install.html:14:21
+#: install.html:8:24 install.html:14:25
 msgid "Install"
 msgstr "安装"
 
-#: install.html:15:20 login.html:15:20
+#: install.html:17:24 login.html:18:24
 msgid "Welcome"
 msgstr "欢迎"
 
-#: install.html:18:34 login.html:18:34
-msgid "Opps, got some errors..."
-msgstr "糟糕，出现了错误……"
-
-#: install.html:25:53
+#: install.html:22:57
 msgid "Site Title"
 msgstr "站点标题"
 
-#: install.html:29:51 login.html:25:51
+#: install.html:26:55 login.html:23:55
 msgid "Username"
 msgstr "用户名"
 
-#: install.html:33:48
+#: install.html:30:52
 msgid "Email"
 msgstr "电子邮件"
 
-#: install.html:37:51 login.html:29:51
+#: install.html:34:52 login.html:27:52
 msgid "Password"
 msgstr "密码"
 
-#: install.html:43:51 login.html:35:51
+#: install.html:40:55 login.html:33:55
 msgid "Submit"
 msgstr "提交"
 
-#: login.html:8:24 login.html:14:21
+#: login.html:8:24
+msgid "Login - %s"
+msgstr "登录 - %s"
+
+#: login.html:15:25
 msgid "Login"
 msgstr "登录"
 
-#: ../service/login.go:14
+#: ../../service/index.go:18
+msgid "failed to query posts"
+msgstr "查询文章失败"
+
+#: ../../service/login.go:14
 msgid "wrong username or password"
 msgstr "用户名或密码错误"
+
+#~ msgid "Hello, World!"
+#~ msgstr "你好，世界"

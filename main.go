@@ -15,7 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed lang/*.po
+//go:embed resource/lang/*.po
 var lang embed.FS
 var ctx = context.Background()
 var dir = flag.String("dir", ".", "data dir")

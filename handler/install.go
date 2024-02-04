@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"code.gopub.tech/pub/reqs"
+	"code.gopub.tech/pub/dto"
 	"code.gopub.tech/pub/service"
 	"code.gopub.tech/pub/webs"
 	"github.com/gin-gonic/gin"
@@ -41,7 +41,7 @@ func Install(ctx *gin.Context) {
 	if checkInstalled(ctx) {
 		return
 	}
-	var req reqs.InstallReq
+	var req dto.InstallReq
 	err := ctx.ShouldBind(&req)
 	if err != nil {
 		showInstallPage(ctx, err)

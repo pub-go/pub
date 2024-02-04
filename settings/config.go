@@ -24,22 +24,22 @@ const (
 )
 
 type Config struct {
-	path        string
-	Addr        string // 监听地址 默认为 ${defaultAddr}
-	LangPath    string // 翻译文件夹 为空表示使用内置翻译
-	Lang        string // 默认语言 为空表示使用系统语言
-	Resource    string // 资源文件夹 为空表示使用内置资源 (可包含 static, views 文件夹)
-	ViewPattern string // 模板文件名正则 为空表示 \.html$ (当有 views 文件夹时)
+	path        string // 配置文件全路径
 	Debug       bool   // 开启 Debug
+	Addr        string // 监听地址 默认为 ${defaultAddr}
 	DBKey       string // 数据库密码 默认随机${defaultKeyLen}位字符
+	Resource    string // 资源文件夹(相对路径) 为空表示使用内置资源 (可包含 lang static, views 文件夹)
+	Lang        string // 默认语言 为空表示使用系统语言
+	ViewPattern string // 模板文件名正则 为空表示 \.html$ (当有 views 文件夹时)
 }
 
+func (c *Config) LangPath() string   { return c.resource("lang") }
 func (c *Config) StaticPath() string { return c.resource("static") }
 func (c *Config) ViewPath() string   { return c.resource("views") }
 func (c *Config) resource(sub string) string {
 	resource := c.Resource
 	if resource != "" { // 指定了资源文件夹
-		dir := filepath.Dir(c.path)
+		dir := filepath.Dir(c.path) // 配置文件所在的文件夹
 		path := filepath.Join(dir, resource, sub)
 		if _, err := os.Stat(path); err == nil {
 			return path // 资源文件夹中存在指定的子文件夹

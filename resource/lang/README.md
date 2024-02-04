@@ -3,7 +3,7 @@
 go install -v code.gopub.tech/tpl/cmd/xtpl@latest
 
 # 抽取翻译字符串
-xtpl -path ../resource/views -output tpl.pot
+xtpl -path ../views -output tpl.pot
 
 # tree
 #    -I 忽略指定的 pattern
@@ -14,7 +14,7 @@ xtpl -path ../resource/views -output tpl.pot
 #    --noreport 不要输入统计信息: x directories, y files
 # grep
 #    -v 排除以斜线结尾的
-tree -I "cmd"  -P "*.go" -F -f -i --noreport .. | grep -v /$ | xargs xgettext -C --from-code=UTF-8 -o go.pot  -kT -kN:1,2 -kN64:1,2 -kX:2,1c -kXN:2,3,1c -kXN64:2,3,1c
+tree -I "cmd"  -P "*.go" -F -f -i --noreport ../.. | grep -v /$ | grep -v ^../..$ | xargs xgettext -C --from-code=UTF-8 -o go.pot  -kT -kN:1,2 -kN64:1,2 -kX:2,1c -kXN:2,3,1c -kXN64:2,3,1c
 
 msgcat tpl.pot go.pot -o messages.pot
 

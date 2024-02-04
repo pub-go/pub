@@ -15,7 +15,7 @@ import (
 
 // InitI18n 初始化翻译
 func InitI18n(defaultLangFs embed.FS) {
-	if path := settings.AppConf.LangPath; path != "" {
+	if path := settings.AppConf.LangPath(); path != "" {
 		t.Load(path)
 		logs.Info(ctx, "set languange path: %v", path)
 	} else {

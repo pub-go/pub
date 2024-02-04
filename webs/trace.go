@@ -17,6 +17,7 @@ const (
 	KeyReqStart    = "reqStart"
 	KeyTrace       = "trace"
 	KeyLang        = "lang"
+	keySiteTitle   = "siteTitle"
 	KeySqlCount    = "sqlCount"
 	KeyRender      = "render"
 	KeyCtx         = "ctx"

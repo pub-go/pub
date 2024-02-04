@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"code.gopub.tech/pub/reqs"
+	"code.gopub.tech/pub/dto"
 	"code.gopub.tech/pub/service"
 	"code.gopub.tech/pub/webs"
 	"github.com/gin-gonic/gin"
@@ -23,7 +23,7 @@ func showLoginPage(ctx *gin.Context, err error) {
 }
 
 func Login(ctx *gin.Context) {
-	var req reqs.LoginReq
+	var req dto.LoginReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		showLoginPage(ctx, err)
 		return

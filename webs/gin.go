@@ -68,9 +68,7 @@ func GetRender(ctx *gin.Context) types.ReloadableRender {
 // Render 渲染页面
 func Render(tpl string, datas ...gin.H) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var data = gin.H{
-			"title": service.GetTitle(ctx),
-		}
+		var data = gin.H{}
 		for _, m := range datas {
 			for k, v := range m {
 				data[k] = v
@@ -99,6 +97,7 @@ func render(ctx *gin.Context, name string, data gin.H) {
 
 	data[KeyCtx] = ctx // 注入上下文 页面中可以 ctx.GetString
 	data[KeyIsDebug] = gin.IsDebugging()
+	data[keySiteTitle] = service.GetTitle(ctx)
 	data[KeyServiceCost] = serviceCost // 请求用时
 
 	data[KeyTplStart] = tplStart // 页面渲染开始时间

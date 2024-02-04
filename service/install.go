@@ -7,7 +7,7 @@ import (
 	"code.gopub.tech/errors"
 	"code.gopub.tech/pub/dal/model"
 	"code.gopub.tech/pub/dal/query"
-	"code.gopub.tech/pub/reqs"
+	"code.gopub.tech/pub/dto"
 	"code.gopub.tech/pub/util"
 	"gorm.io/gorm"
 )
@@ -28,9 +28,7 @@ func Installed(ctx context.Context) bool {
 func queryInstalled(ctx context.Context) bool {
 	o := query.Option
 	do := o.WithContext(ctx)
-	option, err := do.Where(o.Name.Eq(model.OptionNameInstalled)).
-		Limit(1).
-		First()
+	option, err := do.Where(o.Name.Eq(model.OptionNameInstalled)).First()
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return false
 	}
@@ -57,13 +55,13 @@ func GetStaticSalt(ctx context.Context) (string, error) {
 	return salt, nil
 }
 
-func Install(ctx context.Context, req *reqs.InstallReq) error {
+func Install(ctx context.Context, req *dto.InstallReq) error {
 	if req.Salt != salt {
 		return errors.Errorf("invalid request, mismatch salt")
 	}
 	return query.Q.Transaction(func(tx *query.Query) error {
 		u := tx.User
-		salt := util.RandStr(16)
+		salt := util.RandStr(16) // 每个用户在后端再单独随机加盐
 		pass := sha512.Sum512([]byte(req.Password + salt))
 		if err := u.WithContext(ctx).Create(&model.User{
 			Username: req.Username,
@@ -71,16 +69,16 @@ func Install(ctx context.Context, req *reqs.InstallReq) error {
 			Password: pass[:],
 			Salt:     salt,
 		}); err != nil {
-			return err
+			return errors.Wrapf(err, "failed to create user")
 		}
 		o := tx.Option
 		option := &model.Option{Name: model.OptionNameSiteTitle, Value: req.SiteTitle}
 		if err := o.WithContext(ctx).Save(option); err != nil {
-			return err
+			return errors.Wrapf(err, "failed to save site title")
 		}
 		option = &model.Option{Name: model.OptionNameInstalled, Value: model.OptionValueYes}
 		if err := o.WithContext(ctx).Save(option); err != nil {
-			return err
+			return errors.Wrapf(err, "failed to update system option")
 		}
 		SetInstalled()
 		SetTitle(req.SiteTitle)
@@ -100,6 +98,7 @@ func GetTitle(ctx context.Context) string {
 	}
 	return *title
 }
+
 func SetTitle(s string) {
 	title = &s
 }

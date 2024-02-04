@@ -120,7 +120,7 @@ func open(dir string) {
 
 func migrate() {
 	db := DB
-	db.AutoMigrate(&model.User{}, &model.Option{})
+	db.AutoMigrate(model.AutoMigrates()...)
 }
 
 var _ logger.Interface = (*dbLogger)(nil)

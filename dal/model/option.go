@@ -2,11 +2,7 @@ package model
 
 import "gorm.io/gorm"
 
-type Option struct {
-	gorm.Model
-	Name  string `gorm:"unique"`
-	Value string
-}
+func init() { register(Option{}) }
 
 const (
 	OptionNameInstalled = "installed"
@@ -14,3 +10,9 @@ const (
 	OptionNameSalt      = "salt"
 	OptionNameSiteTitle = "site_title"
 )
+
+type Option struct {
+	gorm.Model
+	Name  string `gorm:"unique"`
+	Value string
+}

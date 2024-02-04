@@ -45,7 +45,7 @@ func serveStatic(g gin.IRouter) {
 }
 
 func front(g gin.IRouter) {
-	g.GET("/", webs.Render("index.html"))
+	g.GET("/", handler.Index)
 }
 
 func install(g gin.IRouter) {

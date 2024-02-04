@@ -5,16 +5,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title :text="${__('Home')} - ${title}">Hello, World~</title>
+    <title :text="${__('Home - %s', siteTitle)}">Hello, World~</title>
     <link rel="stylesheet" href="../static/css/style.css" :href="/static/css/style.css">
 </head>
 
 <body>
-    <header></header>
+    <header :replace="header.html">
+        <h1>Site Title</h1>
+    </header>
     <main>
-        <p :text="${__('Hello, World!')}">Hello, World!</p>
+        <section>
+            <ul :if="${resp!=nil && resp.Count>0}" :remove="all-but-first">
+                <li :range="_, item : resp.Posts">
+                    <article :id="post-${item.Post.ID}">
+                        <header>
+                            <h3>
+                                <a href="#" :text="${item.Post.Title}">Article Title</a>
+                            </h3>
+                        </header>
+                        <p :text="${item.Post.Summary}">Summary</p>
+                    </article>
+                </li>
+                <li>Item 2</li>
+            </ul>
+            <p :else :text="${__('No Posts')}">No Posts</p>
+        </section>
+        <aside>Aside</aside>
     </main>
-    <footer :insert="footer.html">Footer</footer>
+    <footer :replace="footer.html">Footer</footer>
 
 </body>
 <t:block :replace="cmt_footer.html"></t:block>

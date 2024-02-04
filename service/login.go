@@ -7,13 +7,13 @@ import (
 
 	"code.gopub.tech/errors"
 	"code.gopub.tech/pub/dal/query"
-	"code.gopub.tech/pub/reqs"
+	"code.gopub.tech/pub/dto"
 	"github.com/youthlin/t"
 )
 
 var errLoginFailed = fmt.Errorf(t.T("wrong username or password"))
 
-func Login(ctx context.Context, req *reqs.LoginReq) error {
+func Login(ctx context.Context, req *dto.LoginReq) error {
 	u := query.User
 	user, err := u.WithContext(ctx).Where(u.Username.Eq(req.Username)).First()
 	if err != nil {

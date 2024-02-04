@@ -9,7 +9,7 @@ msgstr ""
 "#-#-#-#-#  tpl.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-02 23:38:45+0800\n"
+"POT-Creation-Date: 2024-02-04 20:28:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "X-Created-By: xtpl(https://github.com/pub-go/tpl/tree/main/cmd/xtpl)\n"
-"X-xTpl-Path: ../resource/views\n"
+"X-xTpl-Path: ../views\n"
 "X-xTpl-Pattern: .*\\.html\n"
 "X-xTpl-Keywords: T;N:1,2;N64:1,2;X:1c,2;XN:1c,2,3;XN64:1c,2,3;__;_n:1,2;"
 "_x:1c,2;_xn:1c,2,3\n"
@@ -27,7 +27,7 @@ msgstr ""
 "#-#-#-#-#  go.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-02 23:29+0800\n"
+"POT-Creation-Date: 2024-02-04 20:28+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,49 +37,53 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: index.html:8:24
-msgid "Home"
+msgid "Home - %s"
 msgstr ""
 
-#: index.html:12:20
-msgid "Hello, World!"
+#: index.html:31:34
+msgid "No Posts"
 msgstr ""
 
-#: install.html:8:24 install.html:14:21
+#: install.html:8:24 install.html:14:25
 msgid "Install"
 msgstr ""
 
-#: install.html:15:20 login.html:15:20
+#: install.html:17:24 login.html:18:24
 msgid "Welcome"
 msgstr ""
 
-#: install.html:18:34 login.html:18:34
-msgid "Opps, got some errors..."
-msgstr ""
-
-#: install.html:25:53
+#: install.html:22:57
 msgid "Site Title"
 msgstr ""
 
-#: install.html:29:51 login.html:25:51
+#: install.html:26:55 login.html:23:55
 msgid "Username"
 msgstr ""
 
-#: install.html:33:48
+#: install.html:30:52
 msgid "Email"
 msgstr ""
 
-#: install.html:37:51 login.html:29:51
+#: install.html:34:52 login.html:27:52
 msgid "Password"
 msgstr ""
 
-#: install.html:43:51 login.html:35:51
+#: install.html:40:55 login.html:33:55
 msgid "Submit"
 msgstr ""
 
-#: login.html:8:24 login.html:14:21
+#: login.html:8:24
+msgid "Login - %s"
+msgstr ""
+
+#: login.html:15:25
 msgid "Login"
 msgstr ""
 
-#: ../service/login.go:14
+#: ../../service/index.go:18
+msgid "failed to query posts"
+msgstr ""
+
+#: ../../service/login.go:14
 msgid "wrong username or password"
 msgstr ""

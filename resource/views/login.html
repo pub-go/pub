@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title :text="${__('Login')} - ${title}">Login</title>
+    <title :text="${__('Login - %s',siteTitle)}">Login</title>
     <link rel="stylesheet" href="../static/css/style.css" :href="/static/css/style.css">
 
 </head>
@@ -35,7 +35,7 @@
             </fieldset>
         </form>
     </main>
-    <footer :insert="footer.html">Footer</footer>
+    <footer :replace="footer.html">Footer</footer>
     <script src="../static/js/sha256.min.js" :src="/static/js/sha256.min.js"></script>
     <script src="../static/js/login.js" :src="/static/js/login.js"></script>
 </body>
