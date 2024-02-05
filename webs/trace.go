@@ -27,6 +27,7 @@ const (
 	KeyTplParseCost = "tplParseCost"
 	KeyTplCost      = "tplRenderCost"
 	KeyTotalCost    = "totalCost"
+	KeyErr          = "err"
 	HeaderTrace     = "X-Trace-ID"
 )
 
@@ -50,7 +51,7 @@ func Trace() gin.HandlerFunc {
 		)
 
 		// SQL 查询计数
-		ctx = InitSqlCount(ctx)
+		c.Set(KeySqlCount, &atomic.Uint32{})
 
 		SetContext(c, ctx)
 		c.Next()
@@ -62,12 +63,6 @@ func GenTraceID() string {
 	now := time.Now()
 	return fmt.Sprintf("%14s%09d%07s",
 		now.Format("20060102150405"), now.Nanosecond(), util.RandStr(7))
-}
-
-// InitSqlCount 初始化 sql 计数器
-func InitSqlCount(ctx context.Context) context.Context {
-	var count atomic.Uint32
-	return context.WithValue(ctx, sqlCount, &count)
 }
 
 // AddSqlCount sql 计数加一

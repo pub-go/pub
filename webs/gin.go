@@ -1,6 +1,7 @@
 package webs
 
 import (
+	"bytes"
 	"context"
 	"embed"
 	"net/http"
@@ -57,7 +58,7 @@ func SetRender(views embed.FS) gin.HandlerFunc {
 		return m, m.SetSubFS("resource/views").ParseWithSuffix(views, ".html")
 	}, tpl.WithHotReload(gin.IsDebugging()))
 	if err != nil {
-		logs.Panic(ctx, "err=%+v", err)
+		util.Panic(ctx, err)
 	}
 	return func(c *gin.Context) {
 		// 往上下文中注入 Render
@@ -124,7 +125,31 @@ func render(ctx *gin.Context, name string, data gin.H) {
 	data = WithI18n(ctx, data)     // 注入翻译函数
 	data = WithSqlCount(ctx, data) // 注入 sql 计数
 
-	r := GetRender(ctx)                // 获取 Render
-	tpl := r.Instance(ctx, name, data) // 获取渲染器实例
-	ctx.Render(http.StatusOK, tpl)     // 渲染页面
+	result, err := execute(ctx, name, data)
+	if err != nil {
+		cause := err
+		data[KeyErr] = err
+		if result, err = execute(ctx, "500.html", data); err != nil {
+			err = errors.WithSecondary(cause, err)
+		}
+	}
+	if err != nil {
+		ctx.Data(http.StatusInternalServerError, "text/plain; charset=utf-8", []byte(errors.Detail(err)))
+	} else {
+		ctx.Data(http.StatusOK, "text/html; charset=utf-8", result)
+	}
+}
+
+func execute(ctx *gin.Context, name string, data any) ([]byte, error) {
+	r := GetRender(ctx) // 获取 Render
+	t, err := r.GetTemplate(ctx, name)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to GetTemplate: %s", name)
+	}
+	var sb bytes.Buffer
+	err = t.Execute(&sb, data)
+	if err != nil {
+		return nil, err
+	}
+	return sb.Bytes(), nil
 }
