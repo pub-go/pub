@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"sync/atomic"
 	"time"
 
 	"code.gopub.tech/errors"
@@ -38,7 +39,12 @@ func SetRender(views embed.FS) gin.HandlerFunc {
 	}
 	render, err := tpl.NewHTMLRender(func(ctx context.Context) (types.TemplateManager, error) {
 		defer func(start time.Time) {
-			logs.Info(ctx, "parse tpl cost: %v", time.Since(start))
+			d := time.Since(start)
+			val := ctx.Value(KeyTplParseCost)
+			if cost, ok := val.(*atomic.Int64); ok {
+				cost.Store(int64(d))
+			}
+			logs.Info(ctx, "parse tpl cost: %v", d)
 		}(time.Now())
 		m := html.NewTplManager()
 		if viewPath != "" {
@@ -80,19 +86,28 @@ func Render(tpl string, datas ...gin.H) gin.HandlerFunc {
 
 // render 渲染指定模板
 func render(ctx *gin.Context, name string, data gin.H) {
-	reqStart := ctx.GetTime(KeyReqStart)
-	serviceCost := time.Since(reqStart)
-	tplStart := time.Now()
-	tplCost := func() time.Duration {
-		return time.Since(tplStart) // 页面渲染用时
+	reqStart := ctx.GetTime(KeyReqStart) // 请求开始时间
+	serviceCost := time.Since(reqStart)  // 业务处理用时
+
+	tplParseCost := &atomic.Int64{} // 模板解析用时
+	parseCost := func() time.Duration {
+		return time.Duration(tplParseCost.Load())
+	}
+	data[KeyTplParseCost] = parseCost
+	// 如果 reload, 在 reload 时更新解析用时
+	ctx.Set(KeyTplParseCost, tplParseCost)
+
+	tplStart := time.Now()            // 页面渲染开始时间
+	tplCost := func() time.Duration { // 页面渲染用时
+		return time.Since(tplStart)
 	}
 	defer func() {
 		var errs []error
 		for _, e := range ctx.Errors {
 			errs = append(errs, e)
 		}
-		logs.Info(ctx, "serviceCost=%v, Render tpl=%s, cost=%v err=%+v",
-			serviceCost, name, tplCost(), errors.Join(errs...))
+		logs.Info(ctx, "serviceCost=%v, Render tpl=%s, parseCost=%v, renderCost=%v err=%+v",
+			serviceCost, name, parseCost(), tplCost(), errors.Join(errs...))
 	}()
 
 	data[KeyCtx] = ctx // 注入上下文 页面中可以 ctx.GetString

@@ -15,7 +15,7 @@
     </header>
     <main>
         <section>
-            <ul :if="${resp!=nil && resp.Count>0}" :remove="all-but-first">
+            <ul :if="${resp!=nil && len(resp.Posts)>0}" :remove="all-but-first">
                 <li :range="_, item : resp.Posts">
                     <article :id="post-${item.Post.ID}">
                         <header>

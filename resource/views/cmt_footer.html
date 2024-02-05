@@ -1,5 +1,6 @@
 <t:block :raw="${'<!--'}"></t:block>
 <t:block :text="sqlCount=${sqlCount}"></t:block>
-<t:block :text="tplCost=${tplCost()}"></t:block>
+<t:block :text="tplParseCost=${tplParseCost()}"></t:block>
+<t:block :text="tplCost=${tplRenderCost()} - "></t:block>
 <t:block :text="totalCost=${totalCost()}"></t:block>
 <t:block :raw="${'-->'}"></t:block>

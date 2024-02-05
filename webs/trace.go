@@ -14,19 +14,20 @@ import (
 var sqlCount struct{}
 
 const (
-	KeyReqStart    = "reqStart"
-	KeyTrace       = "trace"
-	KeyLang        = "lang"
-	keySiteTitle   = "siteTitle"
-	KeySqlCount    = "sqlCount"
-	KeyRender      = "render"
-	KeyCtx         = "ctx"
-	KeyIsDebug     = "isDebug"
-	KeyServiceCost = "serviceCost"
-	KeyTplStart    = "tplStart"
-	KeyTplCost     = "tplCost"
-	KeyTotalCost   = "totalCost"
-	HeaderTrace    = "X-Trace-ID"
+	KeyReqStart     = "reqStart"
+	KeyTrace        = "trace"
+	KeyLang         = "lang"
+	keySiteTitle    = "siteTitle"
+	KeySqlCount     = "sqlCount"
+	KeyRender       = "render"
+	KeyCtx          = "ctx"
+	KeyIsDebug      = "isDebug"
+	KeyServiceCost  = "serviceCost"
+	KeyTplStart     = "tplStart"
+	KeyTplParseCost = "tplParseCost"
+	KeyTplCost      = "tplRenderCost"
+	KeyTotalCost    = "totalCost"
+	HeaderTrace     = "X-Trace-ID"
 )
 
 // Trace 为每个请求设置一个唯一标记
