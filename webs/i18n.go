@@ -27,15 +27,13 @@ func InitI18n(defaultLangFs embed.FS) {
 }
 
 // I18n 为每个请求决定使用哪种语言
-func I18n() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		ctx := GetContext(c)
-		lang := t.GetUserLang(c.Request) // 获取浏览器偏好语言
-		ctx = kv.Add(ctx, KeyLang, lang) // 在日志中打印
-		ctx = t.SetCtxLocale(ctx, lang)  // 存在 ctx 里
-		SetContext(c, ctx)               // 设置 ctx
-		c.Next()
-	}
+func I18n(c *gin.Context) {
+	ctx := GetContext(c)
+	lang := t.GetUserLang(c.Request) // 获取浏览器偏好语言
+	ctx = kv.Add(ctx, KeyLang, lang) // 在日志中打印
+	ctx = t.SetCtxLocale(ctx, lang)  // 存在 ctx 里
+	SetContext(c, ctx)               // 设置 ctx
+	c.Next()
 }
 
 // WithI18n 将翻译工具函数等注入到模板变量中

@@ -87,6 +87,7 @@ func Render(tpl string, datas ...gin.H) gin.HandlerFunc {
 
 // render 渲染指定模板
 func render(ctx *gin.Context, name string, data gin.H) {
+	data[KeyUser] = GetUser(ctx)
 	reqStart := ctx.GetTime(KeyReqStart) // 请求开始时间
 	serviceCost := time.Since(reqStart)  // 业务处理用时
 
@@ -117,7 +118,7 @@ func render(ctx *gin.Context, name string, data gin.H) {
 	data[KeyServiceCost] = serviceCost // 请求用时
 
 	data[KeyTplStart] = tplStart // 页面渲染开始时间
-	data[KeyTplCost] = tplCost
+	data[KeyTplRenderCost] = tplCost
 	data[KeyTotalCost] = func() time.Duration {
 		return time.Since(reqStart) // 总体用时
 	}

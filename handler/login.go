@@ -32,5 +32,9 @@ func Login(ctx *gin.Context) {
 		showLoginPage(ctx, err)
 		return
 	}
+	webs.SetUserInfo(ctx, &dto.LoginInfo{
+		Username:  req.Username,
+		UserAgent: ctx.Request.UserAgent(),
+	})
 	ctx.Redirect(http.StatusFound, "/")
 }

@@ -1,3 +1,4 @@
 <header>
     <h1 :text="${siteTitle}">Site Title</h1>
+    <div :if="${user != nil}" :text=" ${__('Welcome, %s',user.Username)}"></div>
 </header>

@@ -24,7 +24,7 @@ func register(r *gin.Engine) {
 	r.ContextWithFallback = true
 
 	// 设置好各中间件
-	r.Use(webs.Trace(), webs.I18n(), webs.SetRender(views), webs.Install())
+	r.Use(webs.Trace, webs.I18n, webs.SetRender(views), webs.Install, webs.LoginInfo)
 
 	// 路由逻辑
 	serveStatic(r)
@@ -53,6 +53,8 @@ func install(g gin.IRouter) {
 	g.POST("/install/", handler.Install)
 	g.GET("/login/", handler.LoginPage)
 	g.POST("/login/", handler.Login)
+	admin := g.Group("/admin", webs.Admin)
+	admin.GET("/")
 }
 
 func admin(g gin.IRouter) {

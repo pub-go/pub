@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 
 	"code.gopub.tech/errors"
+	"code.gopub.tech/pub/dal/caches"
 	"code.gopub.tech/pub/dal/model"
 	"code.gopub.tech/pub/dal/query"
 	"code.gopub.tech/pub/dto"
@@ -12,17 +13,17 @@ import (
 	"gorm.io/gorm"
 )
 
-var installed *bool
-var title *string
-var salt string
+var cache = caches.GetDefaultCache()
 
 // Installed 是否已经安装
 func Installed(ctx context.Context) bool {
-	if installed == nil {
-		b := queryInstalled(ctx)
-		installed = &b
+	val, err := cache.GetOrFetch(ctx, caches.Installed, func(ctx context.Context, key string) (any, error) {
+		return queryInstalled(ctx), nil
+	})
+	if err != nil {
+		return false
 	}
-	return *installed
+	return val.(bool)
 }
 
 func queryInstalled(ctx context.Context) bool {
@@ -35,27 +36,33 @@ func queryInstalled(ctx context.Context) bool {
 	return option.Value == model.OptionValueYes
 }
 
-func SetInstalled() {
-	b := true
-	installed = &b
+func SetInstalled(ctx context.Context) {
+	cache.Set(ctx, caches.Installed, true)
 }
 
 func GetStaticSalt(ctx context.Context) (string, error) {
-	if salt == "" {
+	val, err := cache.GetOrFetch(ctx, caches.StaticSalt, func(ctx context.Context, key string) (any, error) {
 		o := query.Option
 		option, err := o.WithContext(ctx).
 			Attrs(o.Value.Value(util.RandStr(16))).
 			Where(o.Name.Eq(model.OptionNameSalt)).
 			FirstOrCreate()
 		if err != nil {
-			return "", errors.Wrapf(err, "failed to get salt")
+			return "", errors.Wrapf(err, "failed to query/create option %v", model.OptionNameSalt)
 		}
-		salt = option.Value
+		return option.Value, nil
+	})
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to get salt")
 	}
-	return salt, nil
+	return val.(string), nil
 }
 
 func Install(ctx context.Context, req *dto.InstallReq) error {
+	salt, err := GetStaticSalt(ctx)
+	if err != nil {
+		return err
+	}
 	if req.Salt != salt {
 		return errors.Errorf("invalid request, mismatch salt")
 	}
@@ -80,25 +87,25 @@ func Install(ctx context.Context, req *dto.InstallReq) error {
 		if err := o.WithContext(ctx).Save(option); err != nil {
 			return errors.Wrapf(err, "failed to update system option")
 		}
-		SetInstalled()
-		SetTitle(req.SiteTitle)
+		SetInstalled(ctx)
+		SetTitle(ctx, req.SiteTitle)
 		return nil
 	})
 }
 
 func GetTitle(ctx context.Context) string {
-	if title == nil {
+	val, _ := cache.GetOrFetch(ctx, caches.SiteTitle, func(ctx context.Context, key string) (any, error) {
 		var s string
 		o := query.Option
 		option, err := o.WithContext(ctx).Where(o.Name.Eq(model.OptionNameSiteTitle)).First()
 		if err == nil && option != nil {
 			s = option.Value
 		}
-		title = &s
-	}
-	return *title
+		return s, nil
+	})
+	return val.(string)
 }
 
-func SetTitle(s string) {
-	title = &s
+func SetTitle(ctx context.Context, s string) {
+	cache.Set(ctx, caches.SiteTitle, s)
 }

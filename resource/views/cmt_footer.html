@@ -1,11 +1,10 @@
 <t:block :raw="${'<!--'}"></t:block>
-<t:block :with="tplParseCost := ${tplParseCost()}">
-    <t:block :with="tplRenderCost := ${tplRenderCost()}">
-        <t:block :text="sqlCount=${sqlCount}"></t:block>
-        <t:block :text="tplParseCost=${tplParseCost}"></t:block>
-        <t:block :text="tplRenderCost=${tplRenderCost}"></t:block>
-        <t:block :text="int(tplRenderCost)=${tplRenderCost.Nanoseconds()}"></t:block>
-        <t:block :text="totalCost=${totalCost()}"></t:block>
-    </t:block>
+<t:block :with="tplParseCost := ${tplParseCost()} ; tplRenderCost := ${tplRenderCost()}">
+    <t:block :text="sqlCount=${sqlCount}"></t:block>
+    <t:block :text="tplParseCost=${tplParseCost}"></t:block>
+    <t:block :text="tplRenderCost=${tplRenderCost}-${tplParseCost}=${
+        duration(int64(tplRenderCost) - tplParseCost.Nanoseconds())
+    }"></t:block>
+    <t:block :text="totalCost=${totalCost()}"></t:block>
 </t:block>
 <t:block :raw="${'-->'}"></t:block>
