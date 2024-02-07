@@ -70,13 +70,22 @@ func Install(ctx context.Context, req *dto.InstallReq) error {
 		u := tx.User
 		salt := util.RandStr(16) // 每个用户在后端再单独随机加盐
 		pass := sha512.Sum512([]byte(req.Password + salt))
-		if err := u.WithContext(ctx).Create(&model.User{
+		user := &model.User{
 			Username: req.Username,
 			Email:    req.Email,
 			Password: pass[:],
 			Salt:     salt,
-		}); err != nil {
+		}
+		if err := u.WithContext(ctx).Create(user); err != nil {
 			return errors.Wrapf(err, "failed to create user")
+		}
+		m := tx.UserMeta
+		if err := m.WithContext(ctx).Create(&model.UserMeta{
+			UserID: user.ID,
+			Key:    model.UserMetaKeyRole,
+			Value:  model.RoleSuperAdmin,
+		}); err != nil {
+			return errors.Wrapf(err, "failed to create user meta")
 		}
 		o := tx.Option
 		option := &model.Option{Name: model.OptionNameSiteTitle, Value: req.SiteTitle}

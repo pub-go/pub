@@ -1,6 +1,20 @@
 package webs
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
 
+	"code.gopub.tech/pub/dal/model"
+	"github.com/gin-gonic/gin"
+)
 
-func Admin(ctx *gin.Context) {}
+func Admin(ctx *gin.Context) {
+	user := GetUser(ctx)
+	if user != nil {
+		if user.HasRole(model.RoleSuperAdmin) {
+			ctx.Next()
+			return
+		}
+	}
+	ctx.Redirect(http.StatusFound, "/login")
+	ctx.Abort()
+}

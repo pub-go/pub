@@ -53,8 +53,9 @@ func install(g gin.IRouter) {
 	g.POST("/install/", handler.Install)
 	g.GET("/login/", handler.LoginPage)
 	g.POST("/login/", handler.Login)
+
 	admin := g.Group("/admin", webs.Admin)
-	admin.GET("/")
+	admin.GET("/", handler.AdminPage)
 }
 
 func admin(g gin.IRouter) {

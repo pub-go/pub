@@ -2,7 +2,7 @@ package model
 
 import "gorm.io/gorm"
 
-func init() { register(User{}) }
+func init() { register(User{}, UserMeta{}) }
 
 type User struct {
 	gorm.Model
@@ -10,4 +10,20 @@ type User struct {
 	Password []byte
 	Email    string
 	Salt     string
+	Avatar   string
+}
+
+const (
+	UserMetaKeyRole = "role" // user role privilege
+)
+
+const (
+	RoleSuperAdmin = "superAdmin"
+)
+
+type UserMeta struct {
+	gorm.Model
+	UserID uint
+	Key    string
+	Value  string
 }

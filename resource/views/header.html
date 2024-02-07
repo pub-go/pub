@@ -1,4 +1,6 @@
 <header>
     <h1 :text="${siteTitle}">Site Title</h1>
-    <div :if="${user != nil}" :text=" ${__('Welcome, %s',user.Username)}"></div>
+    <div :if="${notNull(user)}" :text=" ${__('Welcome, %s',user.Username)}"></div>
+    <a :else href="/login/">Login</a>
+    <a href="/admin/" :text="${__('Admin')}">Admin</a>
 </header>

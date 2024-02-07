@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"code.gopub.tech/logs"
+	"code.gopub.tech/logs/pkg/kv"
 	"code.gopub.tech/pub/dal/caches"
 	"code.gopub.tech/pub/dal/model"
 	"code.gopub.tech/pub/dal/query"
@@ -44,8 +45,15 @@ func LoginInfo(ctx *gin.Context) {
 	ctx.Next()
 }
 
+const UserKey = "currentUser"
+
 // GetUser 用从 Cookie 解析到的登录信息，去查数据库中用户信息
-func GetUser(ctx *gin.Context) *model.User {
+func GetUser(ctx *gin.Context) *dto.UserInfo {
+	if val, ok := ctx.Get(UserKey); ok {
+		if result, ok := val.(*dto.UserInfo); ok {
+			return result
+		}
+	}
 	val, ok := ctx.Get(LoginCookieName)
 	if !ok {
 		return nil
@@ -59,5 +67,20 @@ func GetUser(ctx *gin.Context) *model.User {
 	if err != nil {
 		return nil
 	}
-	return user
+	user.Salt = ""
+	user.Password = nil
+
+	result := &dto.UserInfo{
+		User: user,
+	}
+
+	m := query.UserMeta
+	if metas, err := m.WithContext(ctx).Where(m.UserID.Eq(user.ID), m.Key.Eq(model.UserMetaKeyRole)).Find(); err == nil {
+		for _, meta := range metas {
+			result.Roles = append(result.Roles, meta.Value)
+		}
+	}
+	ctx.Set(UserKey, result)
+	SetContext(ctx, kv.Add(GetContext(ctx), "user", user.Username))
+	return result
 }
