@@ -11,8 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var sqlCount struct{}
-
 const (
 	KeyUser          = "user"
 	KeyReqStart      = "reqStart"
@@ -52,7 +50,7 @@ func Trace(c *gin.Context) {
 	)
 
 	// SQL 查询计数
-	c.Set(KeySqlCount, &atomic.Uint32{})
+	c.Set(KeySqlCount, &atomic.Int64{})
 
 	SetContext(c, ctx)
 	c.Next()
@@ -68,19 +66,19 @@ func GenTraceID() string {
 
 // AddSqlCount sql 计数加一
 func AddSqlCount(ctx context.Context) {
-	value := ctx.Value(sqlCount)
-	if count, ok := value.(*atomic.Int32); ok {
+	value := ctx.Value(KeySqlCount)
+	if count, ok := value.(*atomic.Int64); ok {
 		count.Add(1)
 	}
 }
 
-// WithSqlCount 往渲染数据中添加 sql 计数
-func WithSqlCount(ctx context.Context, data gin.H) gin.H {
-	var count int64
-	value := ctx.Value(sqlCount)
-	if i, ok := value.(*atomic.Int32); ok {
-		count = int64(i.Load())
+func GetSqlCount(ctx *gin.Context) int64 {
+	value, ok := ctx.Get(KeySqlCount)
+	if !ok {
+		return 0
 	}
-	data[KeySqlCount] = count
-	return data
+	if count, ok := value.(*atomic.Int64); ok {
+		return count.Load()
+	}
+	return 0
 }

@@ -123,8 +123,8 @@ func render(ctx *gin.Context, name string, data gin.H) {
 		return time.Since(reqStart) // 总体用时
 	}
 
-	data = WithI18n(ctx, data)     // 注入翻译函数
-	data = WithSqlCount(ctx, data) // 注入 sql 计数
+	data = WithI18n(ctx, data)           // 注入翻译函数
+	data[KeySqlCount] = GetSqlCount(ctx) // 注入 sql 计数
 
 	result, err := execute(ctx, name, data)
 	if err != nil {

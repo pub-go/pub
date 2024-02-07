@@ -1,14 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<t:block :replace="cmt_trace.html"></t:block>
+<html lang="en" :lang="${lang}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title :text="${__('Admin - %s',siteTitle)}">Admin - SiteTitle</title>
+    <link rel="stylesheet" href="../../static/css/admin.css" :href="/static/css/admin.css">
 </head>
 
 <body>
-
+    <header :replace="admin/header.html">Header</header>
+    <section class="content">
+        <aside>
+            <nav>
+                <details>
+                    <summary>Section 1</summary>
+                    <ul>
+                        <li><a href="#">Menu 1</a></li>
+                        <li><a href="#">Menu 2</a></li>
+                    </ul>
+                </details>
+                <details>
+                    <summary>Section 2</summary>
+                    <ul>
+                        <li><a href="#">Menu 1</a></li>
+                        <li><a href="#">Menu 2</a></li>
+                    </ul>
+                </details>
+            </nav>
+        </aside>
+        <main>
+            Main
+        </main>
+    </section>
+    <footer>Footer</footer>
 </body>
+<t:block :replace="cmt_footer.html"></t:block>
 
 </html>

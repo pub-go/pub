@@ -53,16 +53,13 @@ func install(g gin.IRouter) {
 	g.POST("/install/", handler.Install)
 	g.GET("/login/", handler.LoginPage)
 	g.POST("/login/", handler.Login)
-
-	admin := g.Group("/admin", webs.Admin)
-	admin.GET("/", handler.AdminPage)
 }
 
 func admin(g gin.IRouter) {
-	g.GET("/admin/render/reload", func(ctx *gin.Context) {
+	admin := g.Group("/admin", webs.Admin)
+	admin.GET("/", handler.AdminPage)
+	admin.GET("/render/reload", func(ctx *gin.Context) {
 		err := webs.GetRender(ctx).Reload(ctx)
-		ctx.JSON(http.StatusOK, gin.H{
-			"err": err,
-		})
+		ctx.JSON(http.StatusOK, gin.H{"err": err})
 	})
 }
