@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-04 20:28:51+0800\n"
+"POT-Creation-Date: 2024-02-13 23:01:46+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,18 @@ msgstr ""
 "X-xTpl-Pattern: .*\\.html\n"
 "X-xTpl-Keywords: T;N:1,2;N64:1,2;X:1c,2;XN:1c,2,3;XN64:1c,2,3;__;_n:1,2;_x:1c,2;_xn:1c,2,3\n"
 "X-xTpl-Output: tpl.pot\n"
+
+#: admin/index.html:8:24
+msgid "Admin - %s"
+msgstr ""
+
+#: header.html:3:46
+msgid "Welcome, %s"
+msgstr ""
+
+#: header.html:5:35
+msgid "Admin"
+msgstr ""
 
 #: index.html:8:24
 msgid "Home - %s"
@@ -37,7 +49,6 @@ msgid "Install"
 msgstr ""
 
 #: install.html:17:24
-#: login.html:18:24
 msgid "Welcome"
 msgstr ""
 
@@ -45,22 +56,11 @@ msgstr ""
 msgid "Site Title"
 msgstr ""
 
-#: install.html:26:55
-#: login.html:23:55
-msgid "Username"
-msgstr ""
-
 #: install.html:30:52
 msgid "Email"
 msgstr ""
 
-#: install.html:34:52
-#: login.html:27:52
-msgid "Password"
-msgstr ""
-
 #: install.html:40:55
-#: login.html:33:55
 msgid "Submit"
 msgstr ""
 
@@ -68,7 +68,27 @@ msgstr ""
 msgid "Login - %s"
 msgstr ""
 
-#: login.html:15:25
+#: login.html:50:55
 msgid "Login"
+msgstr ""
+
+#: login.html:57:44
+#: login.html:58:55
+#: install.html:26:55
+msgid "Username"
+msgstr ""
+
+#: login.html:62:44
+#: login.html:63:52
+#: install.html:34:52
+msgid "Password"
+msgstr ""
+
+#: login.html:71:46
+msgid "Remember me"
+msgstr ""
+
+#: login.html:75:88
+msgid "Sign in"
 msgstr ""
 
