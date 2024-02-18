@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"code.gopub.tech/pub/dto"
 	"code.gopub.tech/pub/service"
@@ -36,5 +37,9 @@ func Login(ctx *gin.Context) {
 		Username:  req.Username,
 		UserAgent: ctx.Request.UserAgent(),
 	})
-	ctx.Redirect(http.StatusFound, "/")
+	if strings.HasPrefix(req.Redirect, "/") {
+		ctx.Redirect(http.StatusFound, req.Redirect)
+	} else {
+		ctx.Redirect(http.StatusFound, "/")
+	}
 }

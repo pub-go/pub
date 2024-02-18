@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pub v0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-13 23:01:46+0800\n"
+"POT-Creation-Date: 2024-02-18 19:02:07+0800\n"
 "PO-Revision-Date: 2024-01-09 19:40+0800\n"
 "Last-Translator:  <youthlinchen@outlook.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -67,23 +67,51 @@ msgstr "提交"
 msgid "Login - %s"
 msgstr "登录 - %s"
 
-#: login.html:50:55
+#: login.html:62:39
+msgid "Toggle navigation"
+msgstr "切换导航栏展开关闭"
+
+#: login.html:68:91
+msgid "Menu"
+msgstr "菜单"
+
+#: login.html:70:60
+msgctxt "close-btn"
+msgid "Close"
+msgstr "关闭"
+
+#: login.html:81:53
+msgid "Toggle theme"
+msgstr "切换主题"
+
+#: login.html:88:75
+msgctxt "theme"
+msgid "Light"
+msgstr "明亮"
+
+#: login.html:96:75
+msgctxt "theme"
+msgid "Dark"
+msgstr "夜间"
+
+#: login.html:104:75
+msgctxt "theme"
+msgid "Auto"
+msgstr "自动"
+
+#: login.html:120:55
 msgid "Login"
 msgstr "登录"
 
-#: login.html:57:44 login.html:58:55 install.html:26:55
+#: login.html:127:44 login.html:128:55 install.html:26:55
 msgid "Username"
 msgstr "用户名"
 
-#: login.html:62:44 login.html:63:52 install.html:34:52
+#: login.html:132:44 login.html:133:52 install.html:34:52
 msgid "Password"
 msgstr "密码"
 
-#: login.html:71:46
-msgid "Remember me"
-msgstr "记住我"
-
-#: login.html:75:88
+#: login.html:138:88
 msgid "Sign in"
 msgstr "登录"
 

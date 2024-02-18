@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-13 23:01:46+0800\n"
+"POT-Creation-Date: 2024-02-18 19:02:07+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,27 +68,55 @@ msgstr ""
 msgid "Login - %s"
 msgstr ""
 
-#: login.html:50:55
+#: login.html:62:39
+msgid "Toggle navigation"
+msgstr ""
+
+#: login.html:68:91
+msgid "Menu"
+msgstr ""
+
+#: login.html:70:60
+msgctxt "close-btn"
+msgid "Close"
+msgstr ""
+
+#: login.html:81:53
+msgid "Toggle theme"
+msgstr ""
+
+#: login.html:88:75
+msgctxt "theme"
+msgid "Light"
+msgstr ""
+
+#: login.html:96:75
+msgctxt "theme"
+msgid "Dark"
+msgstr ""
+
+#: login.html:104:75
+msgctxt "theme"
+msgid "Auto"
+msgstr ""
+
+#: login.html:120:55
 msgid "Login"
 msgstr ""
 
-#: login.html:57:44
-#: login.html:58:55
+#: login.html:127:44
+#: login.html:128:55
 #: install.html:26:55
 msgid "Username"
 msgstr ""
 
-#: login.html:62:44
-#: login.html:63:52
+#: login.html:132:44
+#: login.html:133:52
 #: install.html:34:52
 msgid "Password"
 msgstr ""
 
-#: login.html:71:46
-msgid "Remember me"
-msgstr ""
-
-#: login.html:75:88
+#: login.html:138:88
 msgid "Sign in"
 msgstr ""
 

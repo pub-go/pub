@@ -15,6 +15,6 @@ func Admin(ctx *gin.Context) {
 			return
 		}
 	}
-	ctx.Redirect(http.StatusFound, "/login")
+	ctx.Redirect(http.StatusFound, "/login?redirect=/admin/")
 	ctx.Abort()
 }

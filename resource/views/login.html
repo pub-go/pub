@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <t:block :replace="cmt_trace.html"></t:block>
-<html lang="en" :lang="${lang}">
+<html lang="en" :lang="${lang}" data-bs-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -8,19 +8,17 @@
     <title :text="${__('Login - %s',siteTitle)}">登录 - 站点标题</title>
     <link rel="icon" href="../static/favicon.ico" :href="/static/favicon.ico">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" :href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/icons/font/bootstrap-icons.min.css"
+        :href="/static/icons/font/bootstrap-icons.min.css">
     <style>
         html,
         body {
             height: 100%;
         }
 
-        body {
+        .form-signin {
             display: flex;
             align-items: center;
-            background-color: #f5f5f5;
-        }
-
-        .form-signin {
             max-width: 330px;
             padding: 15px;
         }
@@ -40,12 +38,84 @@
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
+
+        .theme-check-icon {
+            display: none;
+        }
+
+        .active .theme-check-icon {
+            display: block;
+        }
     </style>
 </head>
 
-<body class="text-center">
-    <main class="form-signin w-100 m-auto">
-        <form action="/login/" method="post" id="login-form">
+<body>
+    <header class="">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <img src="../static/logo.svg" :src="/static/logo.svg" alt="Logo" width="50" height="50">
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar"
+                    :aria-label="${__('Toggle navigation')}" aria-label="切换导航栏展开关闭">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                    aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel" :text="${__('Menu')}">菜单</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                            :aria-label="${_x('close-btn', 'Close')}" aria-label="关闭"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item dropdown">
+                                <button
+                                    class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center"
+                                    id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+                                    aria-label="Toggle theme (dark)">
+                                    <i class="bi-moon-stars-fill bi my-1 theme-icon-active"></i>
+                                    <span class="d-lg-none ms-2" id="bd-theme-text"
+                                        :text="${__('Toggle theme')}">切换主题</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+                                    <li>
+                                        <button type="button" class="dropdown-item d-flex align-items-center"
+                                            data-bs-theme-value="light" aria-pressed="false">
+                                            <i class="bi-sun-fill bi me-2 opacity-50 theme-icon"></i>
+                                            <t:block :text="${_x('theme', 'Light')}">明亮</t:block>
+                                            <i class="theme-check-icon bi-check2 ms-auto"></i>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item d-flex align-items-center active"
+                                            data-bs-theme-value="dark" aria-pressed="true">
+                                            <i class="bi-moon-stars-fill bi me-2 opacity-50 theme-icon"></i>
+                                            <t:block :text="${_x('theme', 'Dark')}">夜间</t:block>
+                                            <i class="theme-check-icon bi-check2 ms-auto"></i>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item d-flex align-items-center"
+                                            data-bs-theme-value="auto" aria-pressed="false">
+                                            <i class="bi-circle-half bi me-2 opacity-50 theme-icon"></i>
+                                            <t:block :text="${_x('theme', 'Auto')}">自动</t:block>
+                                            <i class="theme-check-icon bi-check2 ms-auto"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="text-center form-signin w-100 m-auto">
+        <form action="" method="post" id="login-form">
             <img class="mb-4" src="../static/logo.png" :src="/static/logo.png" alt="Logo" width="80" height="80">
             <h1 class="h3 mb-3 fw-normal" :text="${__('Login')}">登录</h1>
 
@@ -53,23 +123,16 @@
 
             <fieldset id="fieldset" disabled>
                 <div class="form-floating">
-                    <input class="form-control" id="username" name="username" placeholder="用户名"
+                    <input class="form-control" id="username" name="username" required placeholder="用户名"
                         :placeholder="${__('Username')}">
                     <label for="username" :text="${__('Username')}">用户名</label>
                 </div>
                 <div class="form-floating">
-                    <input type="password" class="form-control" id="plain" placeholder="密码"
+                    <input type="password" class="form-control" id="plain" required placeholder="密码"
                         :placeholder="${__('Password')}">
                     <label for="plain" :text="${__('Password')}">密码</label>
                     <input type="hidden" name="password" id="passwd">
                     <input type="hidden" name="salt" :value="${salt}">
-                </div>
-
-                <div class="checkbox mb-3">
-                    <label>
-                        <input type="checkbox" checked>
-                        <t:block :text="${__('Remember me')}">记住我</t:block>
-                    </label>
                 </div>
 
                 <button class="w-100 btn btn-lg btn-primary" type="submit" :text="${__('Sign in')}">登录</button>
@@ -79,9 +142,89 @@
         </form>
     </main>
 
-
+    <script src="../static/js/bootstrap.bundle.min.js" :src="/static/js/bootstrap.bundle.min.js"></script>
     <script src="../static/js/sha256.min.js" :src="/static/js/sha256.min.js"></script>
     <script src="../static/js/login.js" :src="/static/js/login.js"></script>
+    <script>
+        /*!
+ * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
+ * Copyright 2011-2023 The Bootstrap Authors
+ * Licensed under the Creative Commons Attribution 3.0 Unported License.
+ */
+        (() => {
+            'use strict'
+
+            const storedTheme = localStorage.getItem('theme')
+
+            const getPreferredTheme = () => {
+                if (storedTheme) {
+                    return storedTheme
+                }
+                return 'dark'
+            }
+
+            const setTheme = function (theme) {
+                if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark')
+                } else {
+                    document.documentElement.setAttribute('data-bs-theme', theme)
+                }
+            }
+
+            setTheme(getPreferredTheme())
+
+            const showActiveTheme = (theme, focus = false) => {
+                const themeSwitcher = document.querySelector('#bd-theme')
+                if (!themeSwitcher) {
+                    return
+                }
+
+                const themeSwitcherText = document.querySelector('#bd-theme-text')
+                const activeThemeIcon = document.querySelector('.theme-icon-active')
+                const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+                const activeIcon = btnToActive.querySelector('i.theme-icon')
+
+                document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+                    element.classList.remove('active')
+                    element.setAttribute('aria-pressed', 'false')
+                })
+                btnToActive.classList.add('active')
+                btnToActive.setAttribute('aria-pressed', 'true')
+
+                const classList = ([...activeThemeIcon.classList]).filter(s => !s.startsWith('bi-'))
+                const activeClass = [...activeIcon.classList].find(s => s.startsWith('bi-'))
+                classList.push(activeClass)
+                activeThemeIcon.className = classList.join(' ')
+
+                const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.innerText.trim()})`
+                themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
+
+                if (focus) {
+                    themeSwitcher.focus()
+                }
+            }
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (storedTheme !== 'light' || storedTheme !== 'dark') {
+                    setTheme(getPreferredTheme())
+                }
+            })
+
+            window.addEventListener('DOMContentLoaded', () => {
+                showActiveTheme(getPreferredTheme())
+
+                document.querySelectorAll('[data-bs-theme-value]')
+                    .forEach(toggle => {
+                        toggle.addEventListener('click', () => {
+                            const theme = toggle.getAttribute('data-bs-theme-value')
+                            localStorage.setItem('theme', theme)
+                            setTheme(theme)
+                            showActiveTheme(theme, true)
+                        })
+                    })
+            })
+        })()
+    </script>
 </body>
 <t:block :replace="cmt_footer.html"></t:block>
 
