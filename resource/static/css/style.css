@@ -1,0 +1,57 @@
+html,
+body {
+    height: 100%;
+}
+
+.page {
+    padding-top: 66px;
+}
+
+.theme-check-icon {
+    display: none;
+}
+
+.active .theme-check-icon {
+    display: block;
+}
+
+.form-signin {
+    display: flex;
+    align-items: center;
+    max-width: 330px;
+    padding: 15px;
+}
+
+.form-signin .form-floating:focus-within {
+    z-index: 2;
+}
+
+.form-signin .no-bottom-radius {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-signin .no-top-radius {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.admin .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    /* Behind the navbar */
+    padding: 40px 0 0;
+    /* Height of navbar */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.admin .sidebar-sticky {
+    height: calc(100vh - 40px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Scrollable contents if viewport is shorter than content. */
+}

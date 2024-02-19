@@ -1,0 +1,33 @@
+<li class="nav-item dropdown">
+    <a id="bd-theme" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        <i class="bi-moon-stars-fill bi my-1 theme-icon-active"></i>
+        <span class="d-md-none ms-2" id="bd-theme-text" :text="${__('Toggle theme')}">切换主题</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+        <li>
+            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
+                aria-pressed="false">
+                <i class="bi-sun-fill bi me-2 opacity-50 theme-icon"></i>
+                <t:block :text="${_x('theme', 'Light')}">明亮</t:block>
+                <i class="theme-check-icon bi-check2 ms-auto"></i>
+            </button>
+        </li>
+        <li>
+            <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark"
+                aria-pressed="true">
+                <i class="bi-moon-stars-fill bi me-2 opacity-50 theme-icon"></i>
+                <t:block :text="${_x('theme', 'Dark')}">夜间</t:block>
+                <i class="theme-check-icon bi-check2 ms-auto"></i>
+            </button>
+        </li>
+        <li>
+            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto"
+                aria-pressed="false">
+                <i class="bi-circle-half bi me-2 opacity-50 theme-icon"></i>
+                <t:block :text="${_x('theme', 'Auto')}">自动</t:block>
+                <i class="theme-check-icon bi-check2 ms-auto"></i>
+            </button>
+        </li>
+    </ul>
+</li>

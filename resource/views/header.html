@@ -1,6 +1,30 @@
-<header>
-    <h1 :text="${siteTitle}">Site Title</h1>
-    <div :if="${notNull(user)}" :text=" ${__('Welcome, %s',user.Username)}"></div>
-    <a :else href="/login/">Login</a>
-    <a href="/admin/" :text="${__('Admin')}">Admin</a>
+<header class="fixed-top">
+    <nav class="navbar navbar-expand-md bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="../static/logo.svg" :src="/static/logo.svg" alt="Logo" width="40" height="40">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" :aria-label="${__('Toggle navigation')}" aria-label="切换导航栏展开关闭">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel" :text="${__('Menu')}">菜单</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                        :aria-label="${_x('close-btn', 'Close')}" aria-label="关闭"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item ">
+                            <a class="nav-link " href="/admin/">管理</a>
+                        </li>
+                        <li class="nav-item" :replace="toggle_theme.html">ToggleTheme</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
 </header>
