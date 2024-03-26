@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
 
+	"code.gopub.tech/errors"
 	"code.gopub.tech/pub/dto"
 	"code.gopub.tech/pub/service"
 	"code.gopub.tech/pub/webs"

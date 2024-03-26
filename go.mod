@@ -7,7 +7,7 @@ toolchain go1.21.6
 require (
 	code.gopub.tech/errors v0.0.3
 	code.gopub.tech/logs v0.0.5
-	code.gopub.tech/tpl v0.0.0-20240207031612-37a50d644446
+	code.gopub.tech/tpl v0.0.0-20240326111001-5e93b50aded2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/youthlin/driver v0.0.0-20230629035625-d6b779e1d530
 	github.com/youthlin/go-sqlcipher v0.0.2

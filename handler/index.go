@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Index 前台首页
 func Index(ctx *gin.Context) {
 	var req dto.QueryPostReq
 	err := ctx.ShouldBind(&req)

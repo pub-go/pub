@@ -10,6 +10,7 @@ import (
 	"code.gopub.tech/pub/dal/query"
 	"code.gopub.tech/pub/dto"
 	"code.gopub.tech/pub/util"
+	"github.com/youthlin/t"
 	"gorm.io/gorm"
 )
 
@@ -36,10 +37,13 @@ func queryInstalled(ctx context.Context) bool {
 	return option.Value == model.OptionValueYes
 }
 
+// 更新安装状态缓存
 func SetInstalled(ctx context.Context) {
 	cache.Set(ctx, caches.Installed, true)
 }
 
+// GetStaticSalt 获取站点静态 salt
+// 优先从缓存取，没有则查库，db 里没有就创建
 func GetStaticSalt(ctx context.Context) (string, error) {
 	val, err := cache.GetOrFetch(ctx, caches.StaticSalt, func(ctx context.Context, key string) (any, error) {
 		o := query.Option
@@ -58,6 +62,7 @@ func GetStaticSalt(ctx context.Context) (string, error) {
 	return val.(string), nil
 }
 
+// Install 执行安装动作
 func Install(ctx context.Context, req *dto.InstallReq) error {
 	salt, err := GetStaticSalt(ctx)
 	if err != nil {
@@ -66,12 +71,14 @@ func Install(ctx context.Context, req *dto.InstallReq) error {
 	if req.Salt != salt {
 		return errors.Errorf("invalid request, mismatch salt")
 	}
+	t := t.WithContext(ctx)
 	return query.Q.Transaction(func(tx *query.Query) error {
 		u := tx.User
 		salt := util.RandStr(16) // 每个用户在后端再单独随机加盐
 		pass := sha512.Sum512([]byte(req.Password + salt))
 		user := &model.User{
 			Username: req.Username,
+			Display:  req.Username,
 			Email:    req.Email,
 			Password: pass[:],
 			Salt:     salt,
@@ -96,12 +103,31 @@ func Install(ctx context.Context, req *dto.InstallReq) error {
 		if err := o.WithContext(ctx).Save(option); err != nil {
 			return errors.Wrapf(err, "failed to update system option")
 		}
+		post := &model.Post{
+			AuthorID: user.ID,
+			Title:    t.T("Hello, World"),
+			Content:  t.T(`This is a sample post. Go to <a href="/admin">admin page</a> to manage your site.`),
+			Status:   model.PostStatusPublish,
+		}
+		if err := tx.Post.WithContext(ctx).Create(post); err != nil {
+			return errors.Wrapf(err, "failed to create post")
+		}
+		if err := tx.Comment.WithContext(ctx).Create(&model.Comment{
+			AuthorName:  t.T("Comment Robot"),
+			AuthorEmail: "pub@gopub.tech",
+			AuthorURL:   "https://code.gopub.tech/pub",
+			PostID:      post.ID,
+			Content:     t.T(`This is a sample comment.`),
+		}); err != nil {
+			return errors.Wrapf(err, "failed to create comment")
+		}
 		SetInstalled(ctx)
 		SetTitle(ctx, req.SiteTitle)
 		return nil
 	})
 }
 
+// GetTitle 获取站点标题(缓存优先)
 func GetTitle(ctx context.Context) string {
 	val, _ := cache.GetOrFetch(ctx, caches.SiteTitle, func(ctx context.Context, key string) (any, error) {
 		var s string
@@ -115,6 +141,7 @@ func GetTitle(ctx context.Context) string {
 	return val.(string)
 }
 
+// 更新站点标题缓存
 func SetTitle(ctx context.Context, s string) {
 	cache.Set(ctx, caches.SiteTitle, s)
 }

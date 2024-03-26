@@ -150,6 +150,7 @@ func execute(ctx *gin.Context, name string, data any) ([]byte, error) {
 	var sb bytes.Buffer
 	err = t.Execute(&sb, data)
 	if err != nil {
+		logs.Error(ctx, "execute template %s error, data=%v, err=%+v", name, data, err)
 		return nil, err
 	}
 	return sb.Bytes(), nil

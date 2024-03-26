@@ -24,14 +24,19 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-const dbName = "data.db"
-const driverName = "sqlite3_hook"
+const (
+	_DB_NAME     = "data.db"
+	_DRIVER_NAME = "sqlite3_hook"
+)
 
-var DB *gorm.DB
-var sqlLogger logs.Logger
-var ctx = context.Background()
+var (
+	DB        *gorm.DB
+	sqlLogger logs.Logger
+	ctx       = context.Background()
+)
 
-func MustInit(dir string) {
+func MustInit() {
+	dir := filepath.Dir(settings.AppConf.AbsDir())
 	// sql 日志
 	sqlLogger = logs.NewLogger(logs.CombineHandlers(
 		logs.NewHandler(),
@@ -39,14 +44,14 @@ func MustInit(dir string) {
 			logs.WithFile(filepath.Join(dir, "logs", "sql.log")),
 		),
 	))
-	register(dir) // 注册驱动
-	open(dir)     // 打开
-	migrate()     // 自动更新表结构
+	register() // 注册驱动
+	open(dir)  // 打开
+	migrate()  // 自动更新表结构
 }
 
-func register(dir string) {
+func register() {
 	// 注册包装后的驱动 用于 sql 计数
-	driverHook.Register(driverName, &sqlite3.SQLiteDriver{
+	driverHook.Register(_DRIVER_NAME, &sqlite3.SQLiteDriver{
 		OnOpenHook: sqlite3.SimpleOpenHook, // for _pragma_xxx=yyy
 	}, driverHook.NewHook(
 		func(ctx context.Context, method driverHook.Method, query string, args any) context.Context {
@@ -57,6 +62,42 @@ func register(dir string) {
 			return result, err
 		},
 	))
+}
+
+func open(dir string) {
+	params := []string{
+		fmt.Sprintf(`_pragma_key=%q`, settings.AppConf.DBKey),
+		// 注意顺序 _pragma_key 最先；注意引号
+		`_pragma_cipher_page_size=1024`,
+		`_pragma_kdf_iter=4000`,
+		`_pragma_cipher_hmac_algorithm="HMAC_SHA1"`,
+		`_pragma_cipher_kdf_algorithm="PBKDF2_HMAC_SHA1"`,
+		`_pragma_cipher_use_hmac="OFF"`,
+	}
+	dbDir := filepath.Join(dir, "data")
+	if err := os.MkdirAll(dbDir, 0755); err != nil {
+		util.Panic(ctx, errors.Wrapf(err, "mkdir %s", dbDir))
+	}
+	dsn := fmt.Sprintf("%s?%s", filepath.Join(dbDir, _DB_NAME), strings.Join(params, "&"))
+
+	db, err := gorm.Open(&sqlcipher.Dialector{DriverName: _DRIVER_NAME, DSN: dsn}, &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true, // 不创建外键约束
+		Logger: &dbLogger{
+			Logger:   sqlLogger,
+			LogLevel: logger.Info,
+		},
+	})
+	if err != nil {
+		util.Panic(ctx, errors.Wrapf(err, "can not open database `%s`, is key correct?", dsn))
+	}
+	logs.Info(ctx, "init database success")
+	DB = db
+	query.SetDefault(db)
+}
+
+func migrate() {
+	db := DB
+	db.AutoMigrate(model.AutoMigrates()...)
 }
 
 // calculateDepth 忽略 gorm 调用栈 定位到项目调用的代码行
@@ -86,41 +127,6 @@ func calculateDepth() (skip int) {
 		}
 	}
 	return
-}
-
-func open(dir string) {
-	params := []string{
-		fmt.Sprintf(`_pragma_key=%q`, settings.AppConf.DBKey),
-		// 注意顺序 _pragma_key 最先；注意引号
-		`_pragma_cipher_page_size=1024`,
-		`_pragma_kdf_iter=4000`,
-		`_pragma_cipher_hmac_algorithm="HMAC_SHA1"`,
-		`_pragma_cipher_kdf_algorithm="PBKDF2_HMAC_SHA1"`,
-		`_pragma_cipher_use_hmac="OFF"`,
-	}
-	dbDir := filepath.Join(dir, "data")
-	if err := os.MkdirAll(dbDir, 0755); err != nil {
-		util.Panic(ctx, errors.Wrapf(err, "mkdir %s", dbDir))
-	}
-	dsn := fmt.Sprintf("%s?%s", filepath.Join(dbDir, dbName), strings.Join(params, "&"))
-
-	db, err := gorm.Open(&sqlcipher.Dialector{DriverName: driverName, DSN: dsn}, &gorm.Config{
-		Logger: &dbLogger{
-			Logger:   sqlLogger,
-			LogLevel: logger.Info,
-		},
-	})
-	if err != nil {
-		util.Panic(ctx, errors.Wrapf(err, "can not open database `%s`, is key correct?", dsn))
-	}
-	logs.Info(ctx, "init database success")
-	DB = db
-	query.SetDefault(db)
-}
-
-func migrate() {
-	db := DB
-	db.AutoMigrate(model.AutoMigrates()...)
 }
 
 var _ logger.Interface = (*dbLogger)(nil)

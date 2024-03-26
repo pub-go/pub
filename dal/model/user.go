@@ -7,6 +7,7 @@ func init() { register(User{}, UserMeta{}) }
 type User struct {
 	gorm.Model
 	Username string `gorm:"unique"`
+	Display  string
 	Password []byte
 	Email    string
 	Salt     string

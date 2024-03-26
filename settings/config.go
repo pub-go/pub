@@ -24,7 +24,8 @@ const (
 )
 
 type Config struct {
-	path        string // 配置文件全路径
+	dir         string // 配置文件所在文件夹绝对路径
+	path        string // 配置文件绝对路径
 	Debug       bool   // 开启 Debug
 	Addr        string // 监听地址 默认为 ${defaultAddr}
 	DBKey       string // 数据库密码 默认随机${defaultKeyLen}位字符
@@ -33,14 +34,14 @@ type Config struct {
 	ViewPattern string // 模板文件名正则 为空表示 \.html$ (当有 views 文件夹时)
 }
 
+func (c *Config) AbsDir() string     { return c.dir }
 func (c *Config) LangPath() string   { return c.resource("lang") }
 func (c *Config) StaticPath() string { return c.resource("static") }
 func (c *Config) ViewPath() string   { return c.resource("views") }
 func (c *Config) resource(sub string) string {
 	resource := c.Resource
 	if resource != "" { // 指定了资源文件夹
-		dir := filepath.Dir(c.path) // 配置文件所在的文件夹
-		path := filepath.Join(dir, resource, sub)
+		path := filepath.Join(c.dir, resource, sub)
 		if _, err := os.Stat(path); err == nil {
 			return path // 资源文件夹中存在指定的子文件夹
 		} else {
@@ -69,6 +70,7 @@ func ReadConfig(dir string) error {
 	if err != nil {
 		return errors.Wrapf(err, "failed to unmarshal config: %s", b)
 	}
+	conf.dir = filepath.Dir(path)
 	conf.path = path
 	if !conf.Debug {
 		gin.SetMode(gin.ReleaseMode)

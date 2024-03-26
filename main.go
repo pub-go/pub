@@ -49,5 +49,5 @@ func MustInit() {
 		util.Panic(ctx, errors.Wrapf(err, "ReadConfig"))
 	}
 	webs.InitI18n(lang) // 尽早 load 翻译
-	dal.MustInit(abs)   // 连接数据库
+	dal.MustInit()      // 连接数据库
 }

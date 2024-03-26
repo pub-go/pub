@@ -31,13 +31,17 @@ func newPost(db *gorm.DB, opts ...gen.DOOption) post {
 	_post.CreatedAt = field.NewTime(tableName, "created_at")
 	_post.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_post.DeletedAt = field.NewField(tableName, "deleted_at")
-	_post.Author = field.NewUint(tableName, "author")
+	_post.AuthorID = field.NewUint(tableName, "author_id")
 	_post.Title = field.NewString(tableName, "title")
 	_post.Summary = field.NewString(tableName, "summary")
 	_post.Content = field.NewString(tableName, "content")
 	_post.Status = field.NewString(tableName, "status")
-	_post.AllowPing = field.NewBool(tableName, "allow_ping")
-	_post.AllowComment = field.NewBool(tableName, "allow_comment")
+	_post.Disallow = field.NewInt(tableName, "disallow")
+	_post.Author = postBelongsToAuthor{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Author", "model.User"),
+	}
 
 	_post.fillFieldMap()
 
@@ -47,18 +51,18 @@ func newPost(db *gorm.DB, opts ...gen.DOOption) post {
 type post struct {
 	postDo postDo
 
-	ALL          field.Asterisk
-	ID           field.Uint
-	CreatedAt    field.Time
-	UpdatedAt    field.Time
-	DeletedAt    field.Field
-	Author       field.Uint
-	Title        field.String
-	Summary      field.String
-	Content      field.String
-	Status       field.String
-	AllowPing    field.Bool
-	AllowComment field.Bool
+	ALL       field.Asterisk
+	ID        field.Uint
+	CreatedAt field.Time
+	UpdatedAt field.Time
+	DeletedAt field.Field
+	AuthorID  field.Uint
+	Title     field.String
+	Summary   field.String
+	Content   field.String
+	Status    field.String
+	Disallow  field.Int
+	Author    postBelongsToAuthor
 
 	fieldMap map[string]field.Expr
 }
@@ -79,13 +83,12 @@ func (p *post) updateTableName(table string) *post {
 	p.CreatedAt = field.NewTime(table, "created_at")
 	p.UpdatedAt = field.NewTime(table, "updated_at")
 	p.DeletedAt = field.NewField(table, "deleted_at")
-	p.Author = field.NewUint(table, "author")
+	p.AuthorID = field.NewUint(table, "author_id")
 	p.Title = field.NewString(table, "title")
 	p.Summary = field.NewString(table, "summary")
 	p.Content = field.NewString(table, "content")
 	p.Status = field.NewString(table, "status")
-	p.AllowPing = field.NewBool(table, "allow_ping")
-	p.AllowComment = field.NewBool(table, "allow_comment")
+	p.Disallow = field.NewInt(table, "disallow")
 
 	p.fillFieldMap()
 
@@ -115,13 +118,13 @@ func (p *post) fillFieldMap() {
 	p.fieldMap["created_at"] = p.CreatedAt
 	p.fieldMap["updated_at"] = p.UpdatedAt
 	p.fieldMap["deleted_at"] = p.DeletedAt
-	p.fieldMap["author"] = p.Author
+	p.fieldMap["author_id"] = p.AuthorID
 	p.fieldMap["title"] = p.Title
 	p.fieldMap["summary"] = p.Summary
 	p.fieldMap["content"] = p.Content
 	p.fieldMap["status"] = p.Status
-	p.fieldMap["allow_ping"] = p.AllowPing
-	p.fieldMap["allow_comment"] = p.AllowComment
+	p.fieldMap["disallow"] = p.Disallow
+
 }
 
 func (p post) clone(db *gorm.DB) post {
@@ -132,6 +135,77 @@ func (p post) clone(db *gorm.DB) post {
 func (p post) replaceDB(db *gorm.DB) post {
 	p.postDo.ReplaceDB(db)
 	return p
+}
+
+type postBelongsToAuthor struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a postBelongsToAuthor) Where(conds ...field.Expr) *postBelongsToAuthor {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a postBelongsToAuthor) WithContext(ctx context.Context) *postBelongsToAuthor {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a postBelongsToAuthor) Session(session *gorm.Session) *postBelongsToAuthor {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a postBelongsToAuthor) Model(m *model.Post) *postBelongsToAuthorTx {
+	return &postBelongsToAuthorTx{a.db.Model(m).Association(a.Name())}
+}
+
+type postBelongsToAuthorTx struct{ tx *gorm.Association }
+
+func (a postBelongsToAuthorTx) Find() (result *model.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a postBelongsToAuthorTx) Append(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a postBelongsToAuthorTx) Replace(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a postBelongsToAuthorTx) Delete(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a postBelongsToAuthorTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a postBelongsToAuthorTx) Count() int64 {
+	return a.tx.Count()
 }
 
 type postDo struct{ gen.DO }

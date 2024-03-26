@@ -13,7 +13,10 @@ import (
 func QueryPosts(ctx context.Context, req *dto.QueryPostReq) (*dto.QueryPostResp, error) {
 	req.PageSize = 10
 	p := query.Post
-	posts, count, err := p.WithContext(ctx).Where().FindByPage(req.Page*req.PageSize, req.PageSize)
+	posts, count, err := p.WithContext(ctx).
+		Preload(p.Author).
+		Where().
+		FindByPage(req.Page*req.PageSize, req.PageSize)
 	if err != nil {
 		return nil, errors.Wrapf(err, t.WithContext(ctx).T("failed to query posts"))
 	}
@@ -39,7 +42,8 @@ func buildPostItems(ctx context.Context, posts []*model.Post) []*dto.PostItem {
 	for _, post := range posts {
 		post := post
 		result = append(result, &dto.PostItem{
-			Post: post,
+			Post:     post,
+			Comments: []model.Comment{},
 		})
 	}
 	return result
